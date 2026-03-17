@@ -1,0 +1,62 @@
+.controls {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 0 0 8px;
+  background: linear-gradient(transparent, rgba(0,0,0,.9));
+  transition: opacity .3s, transform .3s; z-index: 10;
+}
+.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.hidden { opacity: 0; transform: translateY(4px); pointer-events: none; }
+
+.progressWrapper { position: relative; padding: 8px 16px 4px; }
+.tooltip {
+  position: absolute; bottom: calc(100% + 4px); transform: translateX(-50%);
+  background: rgba(0,0,0,.9); color: #fff; font-size: 11px;
+  font-family: 'JetBrains Mono', monospace; padding: 3px 7px; border-radius: 4px;
+  white-space: nowrap; pointer-events: none; z-index: 20;
+}
+.progressBar { cursor: pointer; padding: 6px 0; margin: -6px 0; }
+.progressBar:hover .thumb { opacity: 1; transform: translateX(-50%) scale(1); }
+.track { position: relative; height: 3px; background: rgba(255,255,255,.2); border-radius: 2px; transition: height .15s; }
+.progressBar:hover .track { height: 5px; }
+.buffered { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255,255,255,.25); border-radius: 2px; }
+.fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--accent); border-radius: 2px; }
+.thumb {
+  position: absolute; top: -50%; transform: translateX(-50%) translateY(-50%) scale(0);
+  width: 13px; height: 13px; background: #fff; border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,.5); opacity: 0; transition: opacity .15s, transform .15s; pointer-events: none;
+}
+
+.row { display: flex; align-items: center; justify-content: space-between; padding: 2px 12px; gap: 4px; }
+.left, .right { display: flex; align-items: center; gap: 2px; }
+
+.btn {
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; color: rgba(255,255,255,.9); cursor: pointer;
+  padding: 6px; border-radius: 6px; transition: color .15s, background .15s, transform .1s; flex-shrink: 0;
+}
+.btn:hover { color: #fff; background: rgba(255,255,255,.1); transform: scale(1.05); }
+.btn:active { transform: scale(.95); }
+
+.volGroup { display: flex; align-items: center; gap: 4px; }
+.volBar { width: 0; overflow: hidden; transition: width .2s; cursor: pointer; padding: 6px 0; margin: -6px 0; }
+.volGroup:hover .volBar { width: 72px; }
+.volTrack { position: relative; height: 3px; background: rgba(255,255,255,.25); border-radius: 2px; }
+.volFill { position: absolute; top: 0; left: 0; height: 100%; background: #fff; border-radius: 2px; }
+.volThumb { position: absolute; top: 50%; transform: translateX(-50%) translateY(-50%); width: 10px; height: 10px; background: #fff; border-radius: 50%; }
+
+.time { display: flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 0 4px; white-space: nowrap; }
+.curr { color: #fff; font-weight: 600; }
+.sep { color: rgba(255,255,255,.4); }
+.total { color: rgba(255,255,255,.6); }
+
+.rateWrap { position: relative; }
+.rateBtn { font-size: 12px; font-family: 'JetBrains Mono', monospace; font-weight: 600; min-width: 36px; }
+.rateMenu {
+  position: absolute; bottom: calc(100% + 8px); right: 0;
+  background: rgba(10,10,15,.97); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px; overflow: hidden; min-width: 72px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.6);
+}
+.rateOpt { display: block; width: 100%; padding: 7px 12px; background: none; border: none; color: rgba(255,255,255,.7); font-size: 12px; font-family: 'JetBrains Mono', monospace; text-align: center; cursor: pointer; transition: background .1s, color .1s; }
+.rateOpt:hover { background: rgba(255,255,255,.08); color: #fff; }
+.rateActive { color: var(--accent); font-weight: 700; }

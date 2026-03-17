@@ -1,0 +1,210 @@
+.page  { padding: 32px; }
+
+/* ── Cabeçalho ─────────────────────────────────────── */
+.header  { margin-bottom: 28px; }
+.title   { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 1px; color: #fff; margin: 0 0 4px; }
+.subtitle{ font-size: .85rem; color: rgba(255,255,255,.4); margin: 0; }
+
+/* ── Card de nova linha ─────────────────────────────── */
+.card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;
+}
+.cardTitle {
+  font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: rgba(255,255,255,.38); margin: 0 0 16px;
+}
+
+/* ── Formulário ─────────────────────────────────────── */
+.form { display: flex; flex-direction: column; gap: 12px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 700px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.label { font-size: .75rem; font-weight: 600; color: rgba(255,255,255,.4); letter-spacing: .04em; }
+.labelHint { font-weight: 400; font-style: italic; opacity: .7; }
+
+.input, .select {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px; color: #fff; font-size: .9rem; padding: 9px 12px; outline: none;
+  transition: border-color .15s; font-family: inherit;
+}
+.input:focus, .select:focus { border-color: var(--accent, #e63946); }
+.input::placeholder { color: rgba(255,255,255,.22); }
+.select option { background: #1a1a2e; }
+
+.checkLabel { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: .88rem; color: rgba(255,255,255,.65); }
+
+.errorMsg { color: #ff6b6b; font-size: .82rem; margin: 4px 0 0; }
+
+.formActions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+.btnSave {
+  background: var(--accent, #e63946); color: #fff; border: none;
+  border-radius: 8px; padding: 9px 20px; font-size: .88rem; font-weight: 600;
+  cursor: pointer; transition: opacity .15s;
+}
+.btnSave:hover:not(:disabled) { opacity: .85; }
+.btnSave:disabled { opacity: .4; cursor: not-allowed; }
+.btnCancel {
+  background: transparent; border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.5); border-radius: 8px; padding: 9px 16px;
+  font-size: .88rem; cursor: pointer; transition: all .15s;
+}
+.btnCancel:hover { border-color: rgba(255,255,255,.3); color: #fff; }
+
+/* ── Loading / empty ────────────────────────────────── */
+.loading, .empty {
+  text-align: center; color: rgba(255,255,255,.35);
+  padding: 48px; font-size: .9rem;
+}
+
+/* ── Tabela ─────────────────────────────────────────── */
+.table {
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px; overflow: hidden;
+}
+
+/* Colunas: pos | título | filtro | ordenação | visual | ativa | ações */
+.thead, .trow {
+  display: grid;
+  grid-template-columns: 64px 1fr 1.4fr .9fr 90px 60px 160px;
+  align-items: center;
+  padding: 10px 16px;
+}
+.thead {
+  background: rgba(255,255,255,.03);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(255,255,255,.28);
+}
+.trow {
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  transition: background .15s;
+  min-height: 52px;
+}
+.trow:last-child { border-bottom: none; }
+.trow:hover { background: rgba(255,255,255,.03); }
+.trowInactive { opacity: .42; }
+.trowDeleting { background: rgba(255,80,80,.05) !important; }
+
+/* ── Coluna de posição + setas ──────────────────────── */
+.posBlock {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.posNum {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem; color: rgba(255,255,255,.32);
+  line-height: 1;
+}
+.moveBtn {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,.22); font-size: .6rem; padding: 1px 4px;
+  line-height: 1; transition: color .15s;
+}
+.moveBtn:hover:not(:disabled) { color: rgba(255,255,255,.7); }
+.moveBtn:disabled { opacity: .2; cursor: not-allowed; }
+
+/* ── Células ────────────────────────────────────────── */
+.rowTitle {
+  font-size: .9rem; font-weight: 500; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.chip {
+  display: inline-block;
+  font-size: .7rem; font-family: 'JetBrains Mono', monospace;
+  background: rgba(255,255,255,.08); color: rgba(255,255,255,.5);
+  padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+}
+.chipVal {
+  display: block; font-size: .72rem; color: rgba(255,255,255,.3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;
+  margin-top: 2px; font-family: 'JetBrains Mono', monospace;
+}
+
+.colSort { font-size: .82rem; color: rgba(255,255,255,.45); }
+
+.typeBadge {
+  display: inline-block;
+  font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+  background: rgba(255,255,255,.07); color: rgba(255,255,255,.45);
+}
+.typeBadgeTop10 {
+  background: rgba(var(--accent-rgb,230,57,70),.14);
+  color: var(--accent, #e63946);
+}
+
+/* ── Toggle ─────────────────────────────────────────── */
+.colActive { display: flex; justify-content: center; }
+.toggle {
+  position: relative; width: 36px; height: 20px; border-radius: 10px;
+  border: none; cursor: pointer; transition: background .2s; padding: 0;
+  flex-shrink: 0;
+}
+.toggleOn  { background: #4caf50; }
+.toggleOff { background: rgba(255,255,255,.15); }
+.toggleThumb {
+  position: absolute; top: 3px;
+  width: 14px; height: 14px; border-radius: 50%; background: #fff;
+  transition: left .2s;
+}
+.toggleOn  .toggleThumb { left: 19px; }
+.toggleOff .toggleThumb { left: 3px; }
+
+/* ── Botões de ação ─────────────────────────────────── */
+.colActions { display: flex; gap: 6px; justify-content: flex-end; }
+
+.btnEdit {
+  font-size: .76rem; font-weight: 600; padding: 5px 11px;
+  border-radius: 6px; border: none; cursor: pointer;
+  background: rgba(255,255,255,.08); color: rgba(255,255,255,.65);
+  transition: background .15s;
+}
+.btnEdit:hover { background: rgba(255,255,255,.16); color: #fff; }
+
+.btnDel {
+  font-size: .76rem; font-weight: 600; padding: 5px 11px;
+  border-radius: 6px; border: none; cursor: pointer;
+  background: rgba(255,80,80,.07); color: rgba(255,100,100,.6);
+  transition: all .15s;
+}
+.btnDel:hover { background: rgba(255,80,80,.18); color: #ff6b6b; }
+.btnDelConfirm {
+  background: rgba(255,80,80,.22) !important; color: #ff6b6b !important;
+  animation: pulse .9s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.65} }
+
+/* ── Edição inline ──────────────────────────────────── */
+.inlineEdit {
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  padding: 16px 20px;
+  background: rgba(var(--accent-rgb,230,57,70),.04);
+  border-left: 3px solid var(--accent, #e63946);
+}
+.inlineEditHeader {
+  margin-bottom: 14px;
+}
+.inlineEditLabel {
+  font-size: .78rem; color: rgba(255,255,255,.45);
+}
+.inlineEditLabel strong { color: rgba(255,255,255,.75); }
+
+/* ── Banner de confirmação de exclusão ──────────────── */
+.deleteBanner {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin-top: 16px; padding: 12px 18px;
+  background: rgba(255,80,80,.07); border: 1px solid rgba(255,80,80,.22);
+  border-radius: 10px; font-size: .84rem; color: rgba(255,255,255,.65);
+}
+.deleteBanner strong { color: #ff8080; }
+.cancelDelBtn {
+  margin-left: auto; background: transparent;
+  border: 1px solid rgba(255,255,255,.15); border-radius: 6px;
+  color: rgba(255,255,255,.45); font-size: .78rem; padding: 5px 12px;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.cancelDelBtn:hover { border-color: rgba(255,255,255,.3); color: #fff; }

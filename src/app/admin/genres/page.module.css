@@ -1,0 +1,306 @@
+.page {
+  padding: 32px;
+}
+
+/* ── Header ──────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.title {
+  font-family: var(--font-display, 'Bebas Neue', sans-serif);
+  font-size: 2rem;
+  letter-spacing: 1px;
+  color: var(--text-primary, #fff);
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted, rgba(255,255,255,.45));
+  margin: 0;
+}
+
+/* ── Add card ─────────────────────────────────────── */
+.addCard {
+  background: var(--surface, rgba(255,255,255,.04));
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.addTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-muted, rgba(255,255,255,.45));
+  margin: 0 0 12px;
+}
+
+.addRow {
+  display: flex;
+  gap: 10px;
+}
+
+.addInput {
+  flex: 1;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color .15s;
+}
+
+.addInput:focus {
+  border-color: var(--accent, #e63946);
+}
+
+.addInput::placeholder {
+  color: rgba(255,255,255,.3);
+}
+
+.btnPrimary {
+  background: var(--accent, #e63946);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity .15s, transform .1s;
+}
+
+.btnPrimary:hover:not(:disabled) { opacity: .88; }
+.btnPrimary:active:not(:disabled) { transform: scale(.97); }
+.btnPrimary:disabled { opacity: .4; cursor: not-allowed; }
+
+.errorMsg {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  color: #ff6b6b;
+}
+
+/* ── Loading / empty ─────────────────────────────── */
+.loading {
+  text-align: center;
+  color: rgba(255,255,255,.4);
+  padding: 48px;
+  font-size: 0.9rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 56px 24px;
+  color: rgba(255,255,255,.4);
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.empty p { margin: 0; font-size: 0.95rem; }
+.emptyHint { font-size: 0.82rem !important; margin-top: 6px !important; opacity: .65; }
+
+/* ── Table ───────────────────────────────────────── */
+.table {
+  background: var(--surface, rgba(255,255,255,.04));
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 1fr 1fr 80px 160px;
+  padding: 10px 20px;
+  background: rgba(255,255,255,.03);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 80px 160px;
+  align-items: center;
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  transition: background .15s;
+}
+
+.tableRow:last-child { border-bottom: none; }
+.tableRow:hover { background: rgba(255,255,255,.03); }
+.rowDeleting { background: rgba(255, 100, 100, .06) !important; }
+
+.genreName {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.slug {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,.35);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.slugPreview {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,.25);
+  font-family: 'JetBrains Mono', monospace;
+  font-style: italic;
+}
+
+.centerCol {
+  display: flex;
+  justify-content: center;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.badgeActive {
+  background: rgba(var(--accent-rgb, 230,57,70), .15);
+  color: var(--accent, #e63946);
+}
+
+.badgeZero {
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.3);
+}
+
+/* ── Edit row ─────────────────────────────────────── */
+.editCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.editInput {
+  background: rgba(255,255,255,.08);
+  border: 1px solid var(--accent, #e63946);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 7px 10px;
+  outline: none;
+  width: 100%;
+}
+
+.inlineError {
+  font-size: 0.75rem;
+  color: #ff6b6b;
+}
+
+/* ── Action buttons ───────────────────────────────── */
+.actionsCol { /* header label */ }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btnEdit,
+.btnSave,
+.btnCancel,
+.btnDelete {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+}
+
+.btnEdit {
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.7);
+}
+
+.btnEdit:hover { background: rgba(255,255,255,.14); color: #fff; }
+
+.btnSave {
+  background: rgba(var(--accent-rgb, 230,57,70), .2);
+  color: var(--accent, #e63946);
+}
+
+.btnSave:hover:not(:disabled) { background: rgba(var(--accent-rgb, 230,57,70), .35); }
+.btnSave:disabled { opacity: .4; cursor: not-allowed; }
+
+.btnCancel {
+  background: transparent;
+  color: rgba(255,255,255,.4);
+  border: 1px solid rgba(255,255,255,.1) !important;
+}
+
+.btnCancel:hover { color: rgba(255,255,255,.7); }
+
+.btnDelete {
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.4);
+}
+
+.btnDelete:hover { background: rgba(255, 80, 80, .15); color: #ff6b6b; }
+
+.btnDeleteConfirm {
+  background: rgba(255, 80, 80, .2) !important;
+  color: #ff6b6b !important;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .7; }
+}
+
+/* ── Delete warning banner ─────────────────────────── */
+.deleteWarning {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 14px 20px;
+  background: rgba(255, 80, 80, .08);
+  border: 1px solid rgba(255, 80, 80, .25);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,.7);
+}
+
+.deleteWarning strong { color: #ff8080; }
+
+.cancelDelete {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 6px;
+  color: rgba(255,255,255,.5);
+  font-size: 0.8rem;
+  padding: 5px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+}
+
+.cancelDelete:hover { border-color: rgba(255,255,255,.3); color: #fff; }

@@ -1,0 +1,103 @@
+.section { margin-bottom: 48px; }
+
+.title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 1.5px;
+  color: rgba(255,255,255,.88);
+  margin-bottom: 16px; padding: 0 48px;
+}
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  padding: 8px 0 16px;
+  /* Deixa o track transbordar, o overflow hidden corta */
+}
+.viewport:active { cursor: grabbing; }
+
+.track {
+  display: flex;
+  gap: 10px;
+  padding: 0 48px;
+  will-change: transform;
+  /* Sem transition — RAF cuida da suavidade */
+}
+
+/* Fades nas bordas */
+.fadeLeft, .fadeRight {
+  position: absolute; top: 0; bottom: 0; width: 80px;
+  pointer-events: none; z-index: 2;
+}
+.fadeLeft  { left: 0;  background: linear-gradient(to right, rgba(5,5,8,1), transparent); }
+.fadeRight { right: 0; background: linear-gradient(to left,  rgba(5,5,8,1), transparent); }
+
+/* ── Card ──────────────────────────────────────────── */
+.card {
+  flex-shrink: 0;
+  width: 180px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 16/9;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255,255,255,.05);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+}
+.card:hover .thumb {
+  transform: scale(1.06) translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.7);
+}
+
+.img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: filter .2s;
+}
+.card:hover .img { filter: brightness(.65); }
+
+.fallback {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  font-size: 22px; color: var(--accent, #e63946);
+}
+
+.overlay {
+  position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 60%);
+  opacity: 0; transition: opacity .25s; display: flex; align-items: flex-end; padding: 12px;
+}
+.card:hover .overlay { opacity: 1; }
+.overlayContent { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+
+.play {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent, #e63946);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+}
+.overlayMeta { display: flex; align-items: center; gap: 8px; }
+.score { color: #f8b400; font-size: 12px; font-weight: 700; }
+.dur { color: rgba(255,255,255,.7); font-size: 11px; }
+.ratingBadge {
+  position: absolute; bottom: 8px; left: 8px;
+  background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8); font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px;
+  opacity: 0; transition: opacity .25s;
+}
+.card:hover .ratingBadge { opacity: 1; }
+.itemTitle {
+  font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,.75);
+  margin: 6px 0 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 0 2px;
+}
+.metaRow { display: flex; align-items: center; gap: 6px; }
+.year { font-size: 11px; color: rgba(255,255,255,.4); }
+.sep { font-size: 11px; color: rgba(255,255,255,.2); }
+.genre { font-size: 11px; color: rgba(255,255,255,.4); }

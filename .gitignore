@@ -1,0 +1,19 @@
+# Next.js
+.next/
+out/
+dist/
+
+# Dependencies
+node_modules/
+
+# SQLite database (dados locais)
+data/
+
+# Env
+.env
+.env.local
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db

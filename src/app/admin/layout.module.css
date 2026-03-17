@@ -1,0 +1,2 @@
+.layout { display: flex; min-height: 100vh; background: #06060a; }
+.main { flex: 1; overflow-x: hidden; }

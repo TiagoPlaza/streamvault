@@ -1,0 +1,75 @@
+.hero {
+  position: relative; width: 100%; height: 92vh; min-height: 600px;
+  display: flex; align-items: flex-end; overflow: hidden;
+}
+.bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center top;
+  transition: opacity .4s ease;
+  transform: scale(1.04);
+  animation: subtle-zoom 8s ease-in-out infinite alternate;
+}
+@keyframes subtle-zoom {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.08); }
+}
+.fading { opacity: 0; }
+.gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to right, rgba(5,5,8,.92) 0%, rgba(5,5,8,.7) 40%, rgba(5,5,8,.1) 70%, transparent 100%
+  ), linear-gradient(to top, rgba(5,5,8,1) 0%, rgba(5,5,8,.3) 40%, transparent 70%);
+}
+.content {
+  position: relative; z-index: 2; padding: 0 72px 80px; max-width: 680px;
+  transition: opacity .35s ease; 
+}
+.content.fading { opacity: 0; }
+
+.meta { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.badge {
+  background: var(--accent); color: #fff; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px;
+}
+.type { color: rgba(255,255,255,.9); font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.dot { color: rgba(255,255,255,.3); font-size: 12px; }
+.year, .dur { color: rgba(255,255,255,.6); font-size: 13px; }
+.rating { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2); color: #fff; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 3px; }
+
+.title {
+  font-family: 'Bebas Neue', 'Impact', sans-serif; font-size: clamp(52px, 7vw, 86px);
+  line-height: .95; letter-spacing: 1px; color: #fff; margin-bottom: 16px;
+  text-shadow: 0 4px 24px rgba(0,0,0,.5);
+}
+.desc {
+  font-size: 15px; color: rgba(255,255,255,.72); line-height: 1.6; margin-bottom: 16px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.genres { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+.genre { font-size: 11px; color: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.2); padding: 3px 10px; border-radius: 100px; }
+
+.actions { display: flex; gap: 12px; align-items: center; }
+.playBtn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 28px; background: var(--accent); border: none; border-radius: 10px;
+  color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none;
+  transition: transform .15s, background .15s; letter-spacing: .3px;
+}
+.playBtn:hover { background: #c1121f; transform: scale(1.02); }
+.playBtn:active { transform: scale(.98); }
+.infoBtn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 22px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+  border-radius: 10px; color: rgba(255,255,255,.85); font-size: 14px; font-weight: 600;
+  text-decoration: none; transition: background .15s, color .15s;
+}
+.infoBtn:hover { background: rgba(255,255,255,.2); color: #fff; }
+
+.dots { position: absolute; bottom: 24px; right: 48px; display: flex; gap: 6px; z-index: 2; }
+.dot2 { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.3); border: none; cursor: pointer; transition: width .3s, background .3s; }
+.dotActive { width: 24px; background: var(--accent); }
+
+@media (max-width: 768px) {
+  .content { padding: 0 24px 64px; }
+  .title { font-size: 44px; }
+}

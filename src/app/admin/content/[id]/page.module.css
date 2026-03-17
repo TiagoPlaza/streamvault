@@ -1,0 +1,9 @@
+.page { padding: 40px; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; }
+.title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: #fff; }
+.sub { font-size: 13px; color: rgba(255,255,255,.4); margin-top: 4px; }
+.backBtn { padding: 8px 16px; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; color: rgba(255,255,255,.6); font-size: 13px; text-decoration: none; transition: all .15s; }
+.backBtn:hover { background: rgba(255,255,255,.06); color: #fff; }
+.formWrap { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); border-radius: 12px; padding: 32px; }
+.notFound { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 80px; color: rgba(255,255,255,.4); }
+.notFound a { color: var(--accent); text-decoration: none; }

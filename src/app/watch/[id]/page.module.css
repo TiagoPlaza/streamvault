@@ -1,0 +1,272 @@
+.page   { min-height: 100vh; }
+.inner  { max-width: 1400px; margin: 0 auto; padding: 84px 48px 64px; }
+
+/* ── Layout filme (original) ─────────────────────── */
+.playerSection { margin-bottom: 40px; }
+
+.infoSection { display: grid; grid-template-columns: 1fr 360px; gap: 48px; }
+@media (max-width: 900px) { .infoSection { grid-template-columns: 1fr; } }
+
+/* ── Layout série ────────────────────────────────── */
+.seriesLayout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: start;
+}
+@media (max-width: 1100px) { .seriesLayout { grid-template-columns: 1fr; } }
+
+.seriesMain { display: flex; flex-direction: column; gap: 28px; }
+.seriesInfo { }
+
+/* ── "Assistindo" badge sob o player ─────────────── */
+.nowPlaying {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: rgba(255,255,255,.04);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.07);
+}
+.nowBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--accent, #e63946);
+  white-space: nowrap;
+}
+.nowTitle {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Sidebar de episódios ────────────────────────── */
+.episodesSidebar {
+  position: sticky;
+  top: 84px;
+  max-height: calc(100vh - 104px);
+  display: flex;
+  flex-direction: column;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  overflow: hidden;
+}
+@media (max-width: 1100px) {
+  .episodesSidebar { position: static; max-height: none; }
+}
+
+.sidebarHeader {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  background: rgba(255,255,255,.02);
+  flex-shrink: 0;
+}
+
+.sidebarTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,.85);
+  margin: 0 0 10px;
+}
+
+/* ── Abas de temporada ───────────────────────────── */
+.seasonTabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.seasonTab {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: transparent;
+  color: rgba(255,255,255,.45);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.seasonTab:hover { background: rgba(255,255,255,.07); color: #fff; }
+.seasonTabActive {
+  background: var(--accent, #e63946) !important;
+  border-color: var(--accent, #e63946) !important;
+  color: #fff !important;
+}
+
+/* ── Lista de episódios ──────────────────────────── */
+.epList {
+  overflow-y: auto;
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.1) transparent;
+}
+.epList::-webkit-scrollbar { width: 4px; }
+.epList::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+
+.epCard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background .15s, border-color .15s;
+}
+.epCard:hover {
+  background: rgba(255,255,255,.05);
+  border-color: rgba(255,255,255,.1);
+}
+
+.epCardActive {
+  background: rgba(var(--accent-rgb, 230,57,70), .1) !important;
+  border-color: rgba(var(--accent-rgb, 230,57,70), .4) !important;
+  cursor: default;
+}
+
+.epCardActive .epNum {
+  color: var(--accent, #e63946);
+}
+
+.epCardActive .epTitle {
+  color: #fff;
+}
+
+.epThumb {
+  width: 100px;
+  aspect-ratio: 16/9;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(255,255,255,.06);
+}
+.epThumbImg { width: 100%; height: 100%; object-fit: cover; display: block; }
+.epThumbBlank {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.2); font-size: 18px;
+}
+
+.epInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.epNum {
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent, #e63946);
+  font-weight: 700;
+}
+.epTitle {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255,255,255,.85);
+}
+.epDesc {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,.35);
+}
+.epDur {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,.3);
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+
+.epEmpty {
+  padding: 24px 18px;
+  color: rgba(255,255,255,.3);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.epsLoading {
+  padding: 24px;
+  text-align: center;
+  color: rgba(255,255,255,.3);
+  font-size: 0.85rem;
+}
+
+/* ── Relacionados (séries) ───────────────────────── */
+.relatedRow { margin-top: 48px; }
+
+/* ── Compartilhado ───────────────────────────────── */
+.noVideo {
+  width: 100%; padding-top: 56.25%; position: relative;
+  background: rgba(255,255,255,.03); border-radius: 12px; border: 1px dashed rgba(255,255,255,.1);
+}
+.noVideo span, .noVideo p {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+}
+.noVideo span { font-size: 48px; opacity: .2; top: 40%; }
+.noVideo p { color: rgba(255,255,255,.3); font-size: 14px; white-space: nowrap; top: 62%; }
+
+.playerLoading {
+  width: 100%; padding-top: 56.25%; position: relative;
+  background: rgba(255,255,255,.03); border-radius: 12px;
+}
+.spinner {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 36px; height: 36px;
+  border: 3px solid rgba(255,255,255,.1);
+  border-top-color: var(--accent, #e63946);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+.badges { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.typeBadge { padding: 3px 10px; background: rgba(255,255,255,.1); border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,.7); }
+.ratingBadge { padding: 3px 8px; border: 1px solid rgba(255,255,255,.2); border-radius: 4px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.7); }
+.featBadge { padding: 3px 10px; background: rgba(var(--accent-rgb),.2); border: 1px solid rgba(var(--accent-rgb),.4); border-radius: 4px; font-size: 11px; font-weight: 700; color: var(--accent); }
+
+.title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 4vw, 56px); letter-spacing: 1px; line-height: .95; margin-bottom: 8px; }
+.originalTitle { font-size: 14px; color: rgba(255,255,255,.4); margin-bottom: 12px; font-style: italic; }
+.metaRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; color: rgba(255,255,255,.6); margin-bottom: 14px; }
+.dot { color: rgba(255,255,255,.25); }
+.year { color: rgba(255,255,255,.7); }
+.score { color: #f8b400; font-weight: 700; }
+
+.genres { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.genre { padding: 4px 12px; border: 1px solid rgba(255,255,255,.15); border-radius: 100px; font-size: 12px; color: rgba(255,255,255,.55); }
+
+.description { font-size: 15px; color: rgba(255,255,255,.7); line-height: 1.7; margin-bottom: 24px; }
+
+.details { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,.03); border-radius: 10px; border: 1px solid rgba(255,255,255,.06); }
+.detailRow { display: grid; grid-template-columns: 90px 1fr; gap: 16px; }
+.detailLabel { font-size: 12px; font-weight: 600; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .5px; padding-top: 1px; }
+.detailValue { font-size: 14px; color: rgba(255,255,255,.75); }
+
+.tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag { font-size: 12px; color: rgba(255,255,255,.35); font-family: 'JetBrains Mono', monospace; }
+
+.mainInfo { }
+.related { }
+.relatedTitle { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: rgba(255,255,255,.8); margin-bottom: 16px; }
+.relatedGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+
+.notFound { min-height: 100vh; }
+.notFoundInner { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; gap: 16px; }
+.nfIcon { font-size: 52px; opacity: .2; }
+.notFoundInner h2 { font-size: 22px; color: rgba(255,255,255,.6); }
+.nfLink { font-size: 14px; color: var(--accent); text-decoration: none; }
+.nfLink:hover { text-decoration: underline; }
+
+@media (max-width: 768px) { .inner { padding: 84px 20px 48px; } }

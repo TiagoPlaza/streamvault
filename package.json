@@ -1,0 +1,29 @@
+{
+  "name": "streamvault",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:seed:force": "tsx scripts/seed.ts --force",
+    "db:reset": "rm -f data/streamvault.db && tsx scripts/seed.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.6.0",
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/youtube": "^0.0.50",
+    "tsx": "^4.19.1",
+    "typescript": "^5"
+  }
+}

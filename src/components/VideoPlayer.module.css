@@ -1,0 +1,56 @@
+.wrap {
+  position: relative; width: 100%; padding-top: 56.25%;
+  background: #000; border-radius: 8px; overflow: hidden; cursor: pointer; user-select: none;
+}
+.thumbnail {
+  position: absolute; top: -2px; left: -2px;
+  width: calc(100% + 4px); height: calc(100% + 4px);
+  border: none; pointer-events: none;
+  overflow: hidden; z-index: 4;
+}
+.thumbnail img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
+}
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 70px;
+  height: 70px;
+
+  background: rgba(0,0,0,0.6);
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+  font-size: 28px;
+}
+.iframe {
+  position: absolute; top: -2px; left: -2px;
+  width: calc(100% + 4px); height: calc(100% + 4px);
+  border: none; pointer-events: none;
+}
+.loading {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.7); z-index: 5;
+}
+.spinner {
+  width: 44px; height: 44px; border: 3px solid rgba(255,255,255,.1);
+  border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ended {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.55); z-index: 8; cursor: pointer;
+}
+.replay {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  color: #fff; font-size: 13px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
+  transition: transform .2s;
+}
+.ended:hover .replay { transform: scale(1.05); }

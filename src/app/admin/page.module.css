@@ -1,0 +1,57 @@
+.page { padding: 40px; display: flex; flex-direction: column; gap: 32px; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; }
+.title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: #fff; }
+.sub { font-size: 13px; color: rgba(255,255,255,.4); margin-top: 4px; }
+.addBtn {
+  padding: 10px 20px; background: var(--accent); border: none; border-radius: 8px;
+  color: #fff; font-size: 13px; font-weight: 700; text-decoration: none; transition: background .15s;
+}
+.addBtn:hover { background: #c1121f; }
+
+.statsGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 1000px) { .statsGrid { grid-template-columns: repeat(2, 1fr); } }
+
+.statCard {
+  padding: 20px; border-radius: 10px; background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07); display: flex; flex-direction: column; gap: 8px;
+}
+.statIcon { font-size: 20px; }
+.statValue { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 1px; line-height: 1; }
+.statLabel { font-size: 12px; color: rgba(255,255,255,.4); }
+
+.color_green .statValue { color: #4caf82; }
+.color_amber .statValue { color: #f0a500; }
+.color_purple .statValue { color: #9b6dff; }
+.color_blue .statValue { color: #5ba4f5; }
+
+.tables { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 1000px) { .tables { grid-template-columns: 1fr; } }
+
+.tableCard {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px; overflow: hidden;
+}
+.tableHeader { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,.06); }
+.tableTitle { font-size: 14px; font-weight: 700; color: rgba(255,255,255,.8); }
+.tableLink { font-size: 12px; color: var(--accent); text-decoration: none; }
+.tableLink:hover { text-decoration: underline; }
+
+.table { width: 100%; border-collapse: collapse; }
+.table th { padding: 10px 20px; text-align: left; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.3); letter-spacing: .5px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,.05); }
+.table td { padding: 12px 20px; font-size: 13px; color: rgba(255,255,255,.7); border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: rgba(255,255,255,.02); }
+
+.itemLink { color: rgba(255,255,255,.85); text-decoration: none; font-weight: 500; }
+.itemLink:hover { color: #fff; text-decoration: underline; }
+.typeTag { font-size: 11px; color: rgba(255,255,255,.4); }
+.dateCell { color: rgba(255,255,255,.4) !important; font-family: 'JetBrains Mono', monospace; font-size: 11px !important; }
+.scoreCell { color: #f0a500; font-weight: 700; font-size: 12px !important; }
+.viewsCell { color: rgba(255,255,255,.5) !important; font-family: 'JetBrains Mono', monospace; font-size: 12px !important; }
+.rankRow { display: flex; align-items: center; gap: 10px; }
+.rank { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,.25); min-width: 24px; }
+
+.statusBadge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.statusPublished { background: rgba(76,175,130,.15); color: #4caf82; }
+.statusDraft { background: rgba(240,165,0,.12); color: #f0a500; }
+.statusArchived { background: rgba(255,255,255,.06); color: rgba(255,255,255,.4); }
