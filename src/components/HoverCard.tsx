@@ -1,25 +1,6 @@
 'use client';
-/**
- * HoverCard — Popover estilo Netflix, reutilizável em ContentCard e Top10Row.
- *
- * Uso:
- *   <HoverCard item={item}>
- *     {({ triggerProps, isOpen }) => (
- *       <div {...triggerProps} className={isOpen ? 'active' : ''}>
- *         ... thumbnail / conteúdo do card filho ...
- *       </div>
- *     )}
- *   </HoverCard>
- *
- * O children é um render prop que recebe:
- *   - triggerProps: { onMouseEnter, onMouseLeave, ref } — aplique no elemento raiz do card
- *   - isOpen: boolean — para estilizar o card quando o popover está aberto
- */
 
-import React, {
-  useState, useRef, useCallback, useEffect,
-  type ReactNode, type MouseEvent,
-} from 'react';
+import React, { useState, useRef, useCallback, useEffect, type ReactNode, type MouseEvent, } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -33,9 +14,9 @@ export function previewUrl(item: ContentItem): string | null {
   const vs = item.videoSource;
   if (!vs) return null;
   if (vs.provider === 'youtube')
-    return `https://www.youtube.com/embed/${vs.videoId}?autoplay=1&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&loop=1&playlist=${vs.videoId}&start=10`;
+    return `https://www.youtube.com/embed/${vs.videoId}?autoplay=1&mute=0&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&loop=1&playlist=${vs.videoId}&start=10`;
   if (vs.provider === 'vimeo')
-    return `https://player.vimeo.com/video/${vs.videoId}?autoplay=1&muted=1&controls=0&autopause=0&loop=1&transparent=0`;
+    return `https://player.vimeo.com/video/${vs.videoId}?autoplay=1&muted=0&controls=0&autopause=0&loop=1&transparent=0`;
   return null;
 }
 
@@ -71,7 +52,8 @@ function Popover({ item, anchorRect, onClose, cancelClose }: PopoverProps) {
 
   return createPortal(
     <>
-      <div
+      <Link
+        href={`/watch/${item.id}`}
         className={styles.popover}
         style={{ left, top, width: popW }}
         onMouseEnter={cancelClose}
@@ -81,7 +63,7 @@ function Popover({ item, anchorRect, onClose, cancelClose }: PopoverProps) {
         <div className={styles.popVideo}>
           {/* {pUrl ? ( */}
             <iframe
-              src={pUrl}
+              src={pUrl ? pUrl : ''}
               className={styles.popIframe}
               allow="autoplay; encrypted-media"
               title={item.title}
@@ -135,7 +117,7 @@ function Popover({ item, anchorRect, onClose, cancelClose }: PopoverProps) {
             ))}
           </div>
         </div>
-      </div>
+      </Link>
     </>,
     document.body
   );

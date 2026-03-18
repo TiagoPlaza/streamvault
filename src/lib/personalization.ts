@@ -20,28 +20,34 @@ export interface WatchEvent {
 
 export function recordWatch(userId: string, event: WatchEvent): void {
   const db = getDb();
-  const hour = new Date().getHours();
+  const hour = new Date().getUTCHours(); // Usar UTC para consistência no servidor
 
-  // Upsert no histórico
-  db.prepare(`
-    INSERT INTO viewing_history (user_id, content_id, episode_id, seconds_watched, completed, hour_of_day, last_watched_at)
-    VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
-    ON CONFLICT(user_id, content_id, episode_id) DO UPDATE SET
-      seconds_watched = seconds_watched + excluded.seconds_watched,
-      completed       = CASE WHEN excluded.completed = 1 THEN 1 ELSE completed END,
-      last_watched_at = excluded.last_watched_at,
-      hour_of_day     = excluded.hour_of_day
-  `).run(
-    userId,
-    event.contentId,
-    event.episodeId ?? null,
-    event.secondsWatched,
-    event.completed ? 1 : 0,
-    hour,
-  );
+  // Agrupa as operações de escrita em uma transação para garantir a atomicidade.
+  // Se a atualização de preferências falhar, o registro de histórico também será revertido.
+  const transaction = db.transaction(() => {
+    // 1. Upsert no histórico de visualização
+    db.prepare(`
+      INSERT INTO viewing_history (user_id, content_id, episode_id, seconds_watched, completed, hour_of_day, last_watched_at)
+      VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+      ON CONFLICT(user_id, content_id, episode_id) DO UPDATE SET
+        seconds_watched = seconds_watched + excluded.seconds_watched,
+        completed       = CASE WHEN excluded.completed = 1 THEN 1 ELSE completed END,
+        last_watched_at = excluded.last_watched_at,
+        hour_of_day     = excluded.hour_of_day
+    `).run(
+      userId,
+      event.contentId,
+      event.episodeId ?? null,
+      event.secondsWatched,
+      event.completed ? 1 : 0,
+      hour,
+    );
 
-  // Atualiza preferências de gênero e horário
-  updatePreferences(userId, event.contentId, hour, event.secondsWatched);
+    // 2. Atualiza as preferências de gênero e horário do usuário
+    updatePreferences(userId, event.contentId, hour, event.secondsWatched);
+  });
+
+  transaction();
 }
 
 function updatePreferences(userId: string, contentId: string, hour: number, seconds: number): void {
@@ -114,7 +120,7 @@ export function getUserPreferences(userId: string): {
 
   const peakHour = Object.entries(usageHours).length
     ? Number(Object.entries(usageHours).sort((a, b) => b[1] - a[1])[0][0])
-    : new Date().getHours();
+    : new Date().getUTCHours();
 
   return { genreScores, usageHours, topGenres, peakHour };
 }

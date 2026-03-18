@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { updateGenre, deleteGenre } from '@/lib/genre-repository';
+import { updateGenre, deleteGenre } from '@/services/genre.service';
 import { ok, err, notFound, serverError } from '../../_helpers';
 
 interface Params { params: { id: string } }

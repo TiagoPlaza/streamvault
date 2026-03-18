@@ -1,12 +1,19 @@
-'use client';
-import React from 'react';
-import Link from 'next/link';
-import { useContent } from '@/context/ContentContext';
-import { formatViews, formatDate } from '@/utils/helpers';
-import styles from './page.module.css';
+import { getViewingStats } from '@/services/viewing-history.service';
+import { listContent } from '@/lib/content-repository';
+import DashboardView from '@/features/admin/dashboard/components/dashboard-view';
 
-export default function AdminDashboard() {
-  const { items } = useContent();
+export default async function AdminDashboard() {
+  // Os dados de conteúdo e estatísticas agora são buscados no lado do servidor,
+  // eliminando a necessidade de um fetch no cliente.
+  const { items } = listContent();
+  const viewStats = getViewingStats();
+
+  // Mapeia os itens injetando a contagem real de views
+  const itemsWithRealViews = items.map(item => ({
+    ...item,
+    // Prioriza o dado da tabela de histórico, senão usa a popularity base
+    displayViews: viewStats[item.id] || item.popularity || 0
+  }));
 
   const stats = {
     total: items.length,
@@ -14,109 +21,15 @@ export default function AdminDashboard() {
     draft: items.filter(i => i.status === 'draft').length,
     movies: items.filter(i => i.type === 'movie').length,
     series: items.filter(i => i.type === 'series').length,
-    totalViews: items.reduce((s, i) => s + i.popularity, 0),
+    // Soma as views REAIS de todos os itens
+    totalViews: Object.values(viewStats).reduce((a, b) => a + b, 0),
     featured: items.filter(i => i.featured).length,
-    avgScore: items.reduce((s, i) => s + i.score, 0) / items.length,
+    avgScore: items.length > 0 ? items.reduce((s, i) => s + i.score, 0) / items.length : 0,
   };
 
   const recent = [...items].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 5);
 
-  const topContent = [...items].sort((a, b) => b.popularity - a.popularity).slice(0, 5);
+  const topContent = [...itemsWithRealViews].sort((a, b) => b.displayViews - a.displayViews).slice(0, 5);
 
-  return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Dashboard</h1>
-          <p className={styles.sub}>Visão geral da plataforma</p>
-        </div>
-        <Link href="/admin/content/new" className={styles.addBtn}>
-          + Adicionar conteúdo
-        </Link>
-      </div>
-
-      {/* Stats */}
-      <div className={styles.statsGrid}>
-        <StatCard label="Total de títulos" value={stats.total} icon="🎬" color="blue" />
-        <StatCard label="Publicados" value={stats.published} icon="✓" color="green" />
-        <StatCard label="Rascunhos" value={stats.draft} icon="◌" color="amber" />
-        <StatCard label="Total de views" value={formatViews(stats.totalViews)} icon="👁" color="purple" />
-        <StatCard label="Filmes" value={stats.movies} icon="🎥" color="blue" />
-        <StatCard label="Séries" value={stats.series} icon="📺" color="blue" />
-        <StatCard label="Em destaque" value={stats.featured} icon="✦" color="amber" />
-        <StatCard label="Nota média" value={stats.avgScore.toFixed(1)} icon="★" color="amber" />
-      </div>
-
-      <div className={styles.tables}>
-        {/* Recent */}
-        <div className={styles.tableCard}>
-          <div className={styles.tableHeader}>
-            <h3 className={styles.tableTitle}>Adicionados recentemente</h3>
-            <Link href="/admin/content" className={styles.tableLink}>Ver todos</Link>
-          </div>
-          <table className={styles.table}>
-            <thead><tr>
-              <th>Título</th><th>Tipo</th><th>Status</th><th>Atualizado</th>
-            </tr></thead>
-            <tbody>
-              {recent.map(item => (
-                <tr key={item.id}>
-                  <td>
-                    <Link href={`/admin/content/${item.id}`} className={styles.itemLink}>
-                      {item.title}
-                    </Link>
-                  </td>
-                  <td><span className={styles.typeTag}>{item.type === 'movie' ? 'Filme' : 'Série'}</span></td>
-                  <td><StatusBadge status={item.status} /></td>
-                  <td className={styles.dateCell}>{formatDate(item.updatedAt)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Top */}
-        <div className={styles.tableCard}>
-          <div className={styles.tableHeader}>
-            <h3 className={styles.tableTitle}>Mais populares</h3>
-          </div>
-          <table className={styles.table}>
-            <thead><tr>
-              <th>Título</th><th>Nota</th><th>Views</th>
-            </tr></thead>
-            <tbody>
-              {topContent.map((item, i) => (
-                <tr key={item.id}>
-                  <td>
-                    <div className={styles.rankRow}>
-                      <span className={styles.rank}>#{i + 1}</span>
-                      <Link href={`/admin/content/${item.id}`} className={styles.itemLink}>{item.title}</Link>
-                    </div>
-                  </td>
-                  <td><span className={styles.scoreCell}>★ {item.score.toFixed(1)}</span></td>
-                  <td className={styles.viewsCell}>{formatViews(item.popularity)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StatCard({ label, value, icon, color }: { label: string; value: string | number; icon: string; color: string }) {
-  return (
-    <div className={`${styles.statCard} ${styles[`color_${color}`]}`}>
-      <div className={styles.statIcon}>{icon}</div>
-      <div className={styles.statValue}>{value}</div>
-      <div className={styles.statLabel}>{label}</div>
-    </div>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = { published: styles.statusPublished, draft: styles.statusDraft, archived: styles.statusArchived };
-  const lbl: Record<string, string> = { published: 'Publicado', draft: 'Rascunho', archived: 'Arquivado' };
-  return <span className={`${styles.statusBadge} ${map[status]}`}>{lbl[status]}</span>;
+  return <DashboardView stats={stats} recent={recent} topContent={topContent} />;
 }

@@ -10,6 +10,7 @@ const links = [
   { href: '/admin/content/new', label: 'Novo conteúdo', icon: '＋' },
   { href: '/admin/genres', label: 'Gêneros', icon: '🎭' },
   { href: '/admin/home-rows', label: 'Home', icon: '🏠' },
+  { href: '/admin/users', label: 'Usuários', icon: '👤' },
   { href: '/', label: 'Ver plataforma', icon: '▶' },
 ];
 

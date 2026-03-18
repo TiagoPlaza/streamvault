@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const { user, isAdmin } = useCurrentUser();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -56,10 +58,20 @@ export default function Navbar() {
               />
             )}
           </div>
-          <Link href="/admin" className={styles.adminBtn}>
-            <AdminIcon />
-            <span>Admin</span>
-          </Link>
+          {isAdmin && (
+            <Link href="/admin" className={styles.adminBtn}>
+              <AdminIcon />
+              <span>Admin</span>
+            </Link>
+          )}
+          
+          {user ? (
+            <span>Olá, {user.name}</span>
+          ) : (
+            <Link href="/login" className={styles.adminBtn}>
+              <span>Entrar</span>
+            </Link>
+          )}
           <div className={styles.avatar}>V</div>
         </div>
       </div>

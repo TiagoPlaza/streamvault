@@ -5,6 +5,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import VideoPlayer from '@/components/VideoPlayer';
 import ContentCard from '@/components/ContentCard';
+import { recordWatchHistory, getEpisodesForSeries } from '@/services/api-client.service';
 import { useContent } from '@/context/ContentContext';
 import { formatDuration, formatViews, formatDate } from '@/utils/helpers';
 import type { Episode } from '@/types/content';
@@ -43,7 +44,7 @@ function EpisodeList({ episodes, currentId, onSelect }: EpisodeListProps) {
           <div className={styles.epInfo}>
             <span className={styles.epNum}>Ep. {ep.episode}</span>
             <span className={styles.epTitle}>{ep.title}</span>
-            {ep.duration > 0 && <span className={styles.epDur}>{ep.duration}min</span>}
+            {(ep.duration ?? 0) > 0 && <span className={styles.epDur}>{ep.duration}min</span>}
           </div>
           {ep.description && <div className={styles.epDesc}>{ep.description}</div>}
         </button>
@@ -89,47 +90,67 @@ export default function WatchPage() {
   const userId = useUserId();
   const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    if (!userId || !item) return;
-    fetch('/api/watch-history', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, contentId: id, secondsWatched: 0 }),
-    }).catch(() => {});
-  }, [id, userId]);
-
   const [allEpisodes, setAllEpisodes] = useState<Episode[]>([]);
   const [loadingEps, setLoadingEps]   = useState(false);
   const [currentEp, setCurrentEp]     = useState<Episode | null>(null);
   const [activeSeason, setActiveSeason] = useState(1);
 
+  useEffect(() => {
+    // 1. Bloqueios de segurança: só prossegue se tiver usuário e o item principal
+    if (!userId || !item) return;
+
+    // 2. Preparação dos dados conforme a estrutura da API
+    const isSeries = item.type === 'series';
+    
+    // Se for série, precisamos esperar o currentEp carregar para não enviar ID nulo
+    if (isSeries && !currentEp) return;
+
+    // SUGESTÃO: Este efeito atualmente registra apenas o *início* da visualização.
+    // O hook `useWatchTracker` (importado mas não usado) deve ser implementado
+    // para monitorar o progresso do vídeo e enviar atualizações periódicas
+    // com o `secondsWatched` real para a API, e marcar como `completed`.
+    recordWatchHistory({
+      userId,
+      contentId: id, // O ID da série ou do filme (ID pai)
+      episodeId: isSeries ? currentEp?.id : undefined, // ID específico se for série
+      secondsWatched: 0, // Placeholder, deve ser atualizado pelo `useWatchTracker`
+      completed: false
+    });
+
+    // O efeito deve rodar sempre que o ID do conteúdo principal ou do episódio mudar.
+    // Usar `item.type` em vez do objeto `item` inteiro evita re-execuções desnecessárias.
+  }, [id, userId, currentEp?.id, item?.type]);
+
+  const epIdFromUrl = searchParams.get('ep');
+
   // Carrega episódios da série
   useEffect(() => {
-    if (!item || item.type !== 'series') return;
-    setLoadingEps(true);
-    fetch(`/api/content/${id}/episodes`)
-      .then(r => r.json())
-      .then(json => {
-        if (!json.ok) return;
-        const eps: Episode[] = json.data;
-        setAllEpisodes(eps);
-
-        // Episódio da URL (?ep=ID) ou primeiro episódio
-        const epIdFromUrl = searchParams.get('ep');
-        const target = epIdFromUrl
-          ? eps.find(e => e.id === epIdFromUrl)
-          : eps[0];
-        if (target) {
-          setCurrentEp(target);
-          setActiveSeason(target.season);
+    const loadEpisodes = async () => {
+      if (!item || item.type !== 'series') return;
+      setLoadingEps(true);
+      try {
+        const eps = await getEpisodesForSeries(id);
+        if (eps.length > 0) {
+          setAllEpisodes(eps);
+          // Episódio da URL (?ep=ID) ou primeiro episódio
+          const target = epIdFromUrl
+            ? eps.find(e => e.id === epIdFromUrl)
+            : eps[0];
+          if (target) {
+            setCurrentEp(target);
+            setActiveSeason(target.season);
+          }
         }
-      })
-      .finally(() => setLoadingEps(false));
-  }, [id, item]); // eslint-disable-line react-hooks/exhaustive-deps
+      } finally {
+        setLoadingEps(false);
+      }
+    };
+    loadEpisodes();
+  }, [id, item, epIdFromUrl]);
 
   // Temporadas disponíveis
   const seasons = useMemo(
-    () => [...new Set(allEpisodes.map(e => e.season))].sort((a, b) => a - b),
+    () => Array.from(new Set(allEpisodes.map(e => e.season))).sort((a, b) => a - b),
     [allEpisodes]
   );
 

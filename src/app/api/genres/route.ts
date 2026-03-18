@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { listGenres, createGenre } from '@/lib/genre-repository';
+import { listGenres, createGenre } from '@/services/genre.service';
 import { ok, err, serverError } from '../_helpers';
 
 export async function GET() {

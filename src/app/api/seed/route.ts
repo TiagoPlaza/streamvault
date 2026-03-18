@@ -7,7 +7,7 @@
 
 import { NextRequest } from 'next/server';
 import { createContent, listContent } from '@/lib/content-repository';
-import { seedGenres, listGenres } from '@/lib/genre-repository';
+import { seedGenres, listGenres } from '@/services/genre.service';
 import { ok, err } from '../_helpers';
 import type { ContentRating, ContentStatus, ContentType } from '@/types/content';
 
