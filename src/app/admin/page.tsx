@@ -5,7 +5,7 @@ import DashboardView from '@/features/admin/dashboard/components/dashboard-view'
 export default async function AdminDashboard() {
   // Os dados de conteúdo e estatísticas agora são buscados no lado do servidor,
   // eliminando a necessidade de um fetch no cliente.
-  const { items } = listContent();
+  const { items } = listContent({limit: 10000});
   const viewStats = getViewingStats();
 
   // Mapeia os itens injetando a contagem real de views

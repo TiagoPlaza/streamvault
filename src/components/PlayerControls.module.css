@@ -16,13 +16,13 @@
 }
 .progressBar { cursor: pointer; padding: 6px 0; margin: -6px 0; }
 .progressBar:hover .thumb { opacity: 1; transform: translateX(-50%) scale(1); }
-.track { position: relative; height: 3px; background: rgba(255,255,255,.2); border-radius: 2px; transition: height .15s; }
-.progressBar:hover .track { height: 5px; }
+.track { position: relative; height: 8px; background: rgba(255,255,255,.2); border-radius: 2px; transition: height .15s; }
+.progressBar:hover .track { height: 12px; }
 .buffered { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255,255,255,.25); border-radius: 2px; }
 .fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--accent); border-radius: 2px; }
 .thumb {
-  position: absolute; top: -50%; transform: translateX(-50%) translateY(-50%) scale(0);
-  width: 13px; height: 13px; background: #fff; border-radius: 50%;
+  position: absolute; top: -50%; transform: translateX(-50%) translateY(-50%) scale(0);margin-top: 2px;
+  width: 20px; height: 20px; background: #fff; border-radius: 50%;
   box-shadow: 0 1px 4px rgba(0,0,0,.5); opacity: 0; transition: opacity .15s, transform .15s; pointer-events: none;
 }
 
@@ -44,13 +44,13 @@
 .volFill { position: absolute; top: 0; left: 0; height: 100%; background: #fff; border-radius: 2px; }
 .volThumb { position: absolute; top: 50%; transform: translateX(-50%) translateY(-50%); width: 10px; height: 10px; background: #fff; border-radius: 50%; }
 
-.time { display: flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 0 4px; white-space: nowrap; }
+.time { display: flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 16px; padding: 0 4px; white-space: nowrap; }
 .curr { color: #fff; font-weight: 600; }
 .sep { color: rgba(255,255,255,.4); }
 .total { color: rgba(255,255,255,.6); }
 
 .rateWrap { position: relative; }
-.rateBtn { font-size: 12px; font-family: 'JetBrains Mono', monospace; font-weight: 600; min-width: 36px; }
+.rateBtn { font-size: 16px; font-family: 'JetBrains Mono', monospace; font-weight: 600; min-width: 36px; }
 .rateMenu {
   position: absolute; bottom: calc(100% + 8px); right: 0;
   background: rgba(10,10,15,.97); border: 1px solid rgba(255,255,255,.1);

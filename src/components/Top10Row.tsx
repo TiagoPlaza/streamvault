@@ -7,7 +7,6 @@ import styles from './Top10Row.module.css';
 
 function Top10Card({ item, rank }: { item: ContentItem; rank: number }) {
   const [imgError, setImgError] = useState(false);
-  console.log("Card: ", item)
   return (
     <HoverCard item={item}>
       {({ triggerProps, isOpen }) => (

@@ -12,6 +12,10 @@ interface HomeRow {
   position: number;
   active: boolean;
   rowType: 'standard' | 'top10';
+  metadata?: {
+    period?: 'day' | 'week' | 'month' | 'all_time';
+    genreId?: string;
+  } | null;
 }
 
 const FILTER_TYPES = [
@@ -28,7 +32,7 @@ const FILTER_TYPES = [
 const SORT_OPTIONS = [
   { value: 'popularity', label: 'Popularidade' },
   { value: 'score',      label: 'Pontuação' },
-  { value: 'year',       label: 'Mais recente' },
+  { valuez: 'year',       label: 'Mais recente' },
   { value: 'top10_algo', label: 'Algoritmo Top 10' },
   { value: 'random',     label: 'Aleatório diário' },
 ];
@@ -36,7 +40,7 @@ const SORT_OPTIONS = [
 const BLANK: Omit<HomeRow, 'id'> = {
   title: '', filterType: 'genre', filterValue: '',
   sortBy: 'popularity', contentLimit: 20,
-  position: 0, active: true, rowType: 'standard',
+  position: 0, active: true, rowType: 'standard', metadata: {}
 };
 
 // ─── Sub‑componente de formulário (reutilizado em Nova e Edição) ─────────────
@@ -54,6 +58,7 @@ interface RowFormProps {
 function RowForm({ value, onChange, onSave, onCancel, saving, error, mode }: RowFormProps) {
   const filterMeta = FILTER_TYPES.find(f => f.value === value.filterType);
   const needsValue = !['featured', 'new', 'top10'].includes(value.filterType);
+  const isTop10 = value.rowType === 'top10';
 
   return (
     <div className={styles.form}>
@@ -79,36 +84,63 @@ function RowForm({ value, onChange, onSave, onCancel, saving, error, mode }: Row
       </div>
 
       {/* Linha 2: filtro + valor + ordenação */}
-      <div className={styles.grid3}>
-        <div className={styles.field}>
-          <label className={styles.label}>Filtrar por</label>
-          <select className={styles.select} value={value.filterType}
-            onChange={e => onChange('filterType', e.target.value)}>
-            {FILTER_TYPES.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
-          </select>
+      {isTop10 ? (
+        <div className={styles.grid2}>
+          <div className={styles.field}>
+            <label className={styles.label}>Período do Ranking</label>
+            <select
+              className={styles.select}
+              value={value.metadata?.period || 'week'}
+              onChange={e => onChange('metadata', { ...value.metadata, period: e.target.value })}
+            >
+              <option value="day">Hoje (24h)</option>
+              <option value="week">Esta Semana</option>
+              <option value="month">Este Mês</option>
+              <option value="all_time">Todo o Tempo</option>
+            </select>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Gênero (ID opcional)</label>
+            <input
+              className={styles.input}
+              placeholder="Ex: action"
+              value={value.metadata?.genreId || ''}
+              onChange={e => onChange('metadata', { ...value.metadata, genreId: e.target.value })}
+            />
+          </div>
         </div>
-        <div className={styles.field}>
-          <label className={styles.label}>
-            Valor
-            {filterMeta && <span className={styles.labelHint}> — {filterMeta.hint}</span>}
-          </label>
-          <input
-            className={styles.input}
-            value={value.filterValue ?? ''}
-            onChange={e => onChange('filterValue', e.target.value)}
-            placeholder={filterMeta?.hint ?? ''}
-            disabled={!needsValue}
-            style={!needsValue ? { opacity: .35 } : {}}
-          />
+      ) : (
+        <div className={styles.grid3}>
+          <div className={styles.field}>
+            <label className={styles.label}>Filtrar por</label>
+            <select className={styles.select} value={value.filterType}
+              onChange={e => onChange('filterType', e.target.value)}>
+              {FILTER_TYPES.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+            </select>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>
+              Valor
+              {filterMeta && <span className={styles.labelHint}> — {filterMeta.hint}</span>}
+            </label>
+            <input
+              className={styles.input}
+              value={value.filterValue ?? ''}
+              onChange={e => onChange('filterValue', e.target.value)}
+              placeholder={filterMeta?.hint ?? ''}
+              disabled={!needsValue}
+              style={!needsValue ? { opacity: .35 } : {}}
+            />
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Ordenar por</label>
+            <select className={styles.select} value={value.sortBy}
+              onChange={e => onChange('sortBy', e.target.value)}>
+              {SORT_OPTIONS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+            </select>
+          </div>
         </div>
-        <div className={styles.field}>
-          <label className={styles.label}>Ordenar por</label>
-          <select className={styles.select} value={value.sortBy}
-            onChange={e => onChange('sortBy', e.target.value)}>
-            {SORT_OPTIONS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
-        </div>
-      </div>
+      )}
 
       {/* Linha 3: limite + posição + ativo */}
       <div className={styles.grid3}>
@@ -187,10 +219,15 @@ export default function AdminHomeRowsPage() {
 
   function startEdit(row: HomeRow) {
     setEditId(row.id);
-    setEditForm({ title: row.title, filterType: row.filterType,
-      filterValue: row.filterValue ?? '', sortBy: row.sortBy,
-      contentLimit: row.contentLimit, position: row.position,
-      active: row.active, rowType: row.rowType });
+    setEditForm({ 
+      title: row.title, 
+      filterType: row.filterType,
+      filterValue: row.filterValue ?? '', 
+      sortBy: row.sortBy,
+      contentLimit: row.contentLimit, 
+      position: row.position, active: row.active,
+      rowType: row.rowType, 
+      metadata: row.rowType === 'top10' ? row.metadata : null });
     setError('');
     setDeleteId(null);
   }
@@ -319,16 +356,32 @@ export default function AdminHomeRowsPage() {
                   </span>
 
                   <span className={styles.colFilter}>
-                    <span className={styles.chip}>
-                      {FILTER_TYPES.find(f => f.value === row.filterType)?.label ?? row.filterType}
-                    </span>
-                    {row.filterValue && (
-                      <span className={styles.chipVal}>{row.filterValue}</span>
+                    {row.rowType === 'top10' ? (
+                      <>
+                        <span className={styles.chip}>
+                          {row.metadata?.period === 'all_time' ? 'Geral' : (row.metadata?.period || 'Semana')}
+                        </span>
+                        {row.metadata?.genreId && (
+                          <span className={styles.chipVal}>{row.metadata.genreId}</span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <span className={styles.chip}>
+                          {FILTER_TYPES.find(f => f.value === row.filterType)?.label ?? row.filterType}
+                        </span>
+                        {row.filterValue && (
+                          <span className={styles.chipVal}>{row.filterValue}</span>
+                        )}
+                      </>
                     )}
                   </span>
 
                   <span className={styles.colSort}>
-                    {SORT_OPTIONS.find(s => s.value === row.sortBy)?.label ?? row.sortBy}
+                    {row.rowType === 'top10'
+                      ? <span style={{ opacity: 0.5 }}>Automático</span>
+                      : (SORT_OPTIONS.find(s => s.value === row.sortBy)?.label ?? row.sortBy)
+                    }
                   </span>
 
                   <span className={styles.colType}>

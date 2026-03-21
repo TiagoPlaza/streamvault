@@ -98,6 +98,7 @@ export function listContent(filters: ListFilters = {}): { items: ContentItem[]; 
   const conditions: string[] = [];
   const params: (string | number)[] = [];
 
+
   if (filters.status && filters.status !== 'all') {
     conditions.push('status = ?');
     params.push(filters.status);

@@ -20,7 +20,7 @@
   width: 70px;
   height: 70px;
 
-  background: rgba(0,0,0,0.6);
+  background: rgba(var(--accent-rgb), .4);
   border-radius: 50%;
 
   display: flex;

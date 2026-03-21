@@ -10,16 +10,19 @@ import { useContent } from '@/context/ContentContext';
 import type { ContentItem } from '@/types/content';
 import styles from './page.module.css';
 
-interface ResolvedRow {
+export interface ResolvedRow {
   id: number;
   title: string;
   rowType: 'standard' | 'top10';
   position: number;
   items: ContentItem[];
+  // Metadados opcionais para customização futura (ex: 'today', 'genre:action')
+  // Isso permite que o Admin envie configurações específicas se necessário
+  metadata?: {
+    period?: 'day' | 'week' | 'month' | 'all_time';
+    genreId?: string;
+  };
 }
-
-// "Chega de Tédio" usa InfiniteRow
-const INFINITE_TITLES = ['chega de tédio'];
 
 export default function HomePage() {
   const userId           = useUserId();
@@ -33,7 +36,6 @@ export default function HomePage() {
     fetch(`/api/home?userId=${encodeURIComponent(userId)}`)
       .then(r => r.json())
       .then(json => { 
-        console.log(`/api/home?userId=${encodeURIComponent(userId)}`)
         if (json.ok) setRows(json.data); 
       })
       .catch(() => {})
@@ -55,16 +57,15 @@ export default function HomePage() {
           </div>
         ) : (
           rows.map(row => {
-            const isInfinite = INFINITE_TITLES.some(t =>
-              row.title.toLowerCase().includes(t)
-            );
-
+            // Renderiza Top 10 (seja geral, hoje, ou por gênero, conforme o título/items vindos da API)
             if (row.rowType === 'top10') {
-              return <Top10Row key={row.id} title={row.title} items={row.items} />;
+              if(row.items.length > 9) {
+                return <Top10Row key={row.id} title={row.title} items={row.items} />;
+              } else {
+                return null;
+              }
             }
-            // if (isInfinite) {
-            //   return <InfiniteRow key={row.id} title={row.title} items={row.items} />;
-            // }
+
             return <ContentRow key={row.id} title={row.title} items={row.items} />;
           })
         )}

@@ -16,7 +16,10 @@ export async function GET(req: NextRequest) {
     const userId = req.nextUrl.searchParams.get('userId') ?? undefined;
     const rows   = listHomeRows(true);
     
+
+    console.log('Rows: ', rows)
     const { items: allContent } = listContent({ status: 'published', limit: 500 });
+
     const history = userId ? getUserHistory(userId) : [];
 
     const resolved = rows.map(row => ({

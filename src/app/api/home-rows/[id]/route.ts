@@ -24,7 +24,9 @@ export async function PUT(req: NextRequest, { params }: Params) {
       ...(body.position     !== undefined && { position:     Number(body.position) }),
       ...(body.active       !== undefined && { active:       Boolean(body.active) }),
       ...(body.rowType      !== undefined && { rowType:      body.rowType }),
+      ...(body.metadata     !== undefined && { metadata:     body.metadata }),
     });
+  console.log('Row: ', row);
     if (!row) return notFound('Linha');
     return ok(row);
   } catch (e) { return serverError(e); }

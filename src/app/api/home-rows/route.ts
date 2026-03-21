@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
       position:     body.position ? Number(body.position) : undefined,
       active:       body.active !== false,
       rowType:      body.rowType ?? 'standard',
+      metadata:     body.metadata ?? {},
     });
     return ok(row, 201);
   } catch (e) { return serverError(e); }

@@ -14,9 +14,9 @@ export function previewUrl(item: ContentItem): string | null {
   const vs = item.videoSource;
   if (!vs) return null;
   if (vs.provider === 'youtube')
-    return `https://www.youtube.com/embed/${vs.videoId}?autoplay=1&mute=0&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&loop=1&playlist=${vs.videoId}&start=10`;
+    return `https://www.youtube.com/embed/${vs.videoId}?autoplay=1&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&loop=1&playlist=${vs.videoId}&start=10`;
   if (vs.provider === 'vimeo')
-    return `https://player.vimeo.com/video/${vs.videoId}?autoplay=1&muted=0&controls=0&autopause=0&loop=1&transparent=0`;
+    return `https://player.vimeo.com/video/${vs.videoId}?autoplay=1&muted=1&controls=0&autopause=0&loop=1&transparent=0`;
   return null;
 }
 

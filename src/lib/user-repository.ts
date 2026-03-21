@@ -14,6 +14,17 @@ export function initUserTable() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Tabela para histórico de visualização
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS watch_history (
+      user_id TEXT NOT NULL,
+      content_id TEXT NOT NULL,
+      seconds_watched INTEGER DEFAULT 0,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (user_id, content_id)
+    )
+  `);
 }
 
 export async function createUser(email: string, password: string, name?: string) {
@@ -53,12 +64,26 @@ export async function validateUser(email: string, password: string) {
   return null;
 }
 
-export function getUsers() {
+export function getUsers(page: number = 1, limit: number = 10) {
   const db = getDb();
   initUserTable();
-  // Retorna todos os usuários sem o hash da senha, ordenados por data de criação
-  const users = db.prepare('SELECT id, email, role, name, created_at FROM users ORDER BY created_at DESC').all();
-  return users as (User & { created_at: string })[];
+  
+  const offset = (page - 1) * limit;
+
+  const users = db.prepare(`
+    SELECT id, email, role, name, created_at 
+    FROM users 
+    ORDER BY created_at DESC 
+    LIMIT ? OFFSET ?
+  `).all(limit, offset);
+
+  const total = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
+
+  return {
+    data: users as (User & { created_at: string })[],
+    total: total.count,
+    totalPages: Math.ceil(total.count / limit)
+  };
 }
 
 export function updateUserRole(userId: string, newRole: UserRole) {
@@ -72,4 +97,26 @@ export function deleteUser(userId: string) {
   const db = getDb();
   const result = db.prepare('DELETE FROM users WHERE id = ?').run(userId);
   return result.changes > 0;
+}
+
+// --- Watch History ---
+
+export function upsertWatchHistory(userId: string, contentId: string, seconds: number) {
+  const db = getDb();
+  initUserTable();
+  
+  const stmt = db.prepare(`
+    INSERT INTO watch_history (user_id, content_id, seconds_watched, updated_at)
+    VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(user_id, content_id) 
+    DO UPDATE SET seconds_watched = excluded.seconds_watched, updated_at = CURRENT_TIMESTAMP
+  `);
+  
+  return stmt.run(userId, contentId, seconds);
+}
+
+export function getWatchHistory(userId: string, contentId: string) {
+  const db = getDb();
+  initUserTable();
+  return db.prepare('SELECT seconds_watched FROM watch_history WHERE user_id = ? AND content_id = ?').get(userId, contentId) as { seconds_watched: number } | undefined;
 }

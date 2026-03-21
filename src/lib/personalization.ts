@@ -18,6 +18,64 @@ export interface WatchEvent {
   completed?: boolean;
 }
 
+function getTop10(period: 'day' | 'week' | 'month' | 'all_time') {
+  const db = getDb();
+  const intervalMap = {
+    day: "-1 day",
+    week: "-7 day",
+    month: "-1 month",
+    year: "-1 year"
+  };
+
+  const where =
+    period === 'all_time'
+      ? ''
+      : `WHERE last_watched_at >= datetime('now', '${intervalMap[period]}')`;
+
+  const query = `
+    SELECT 
+      c.id,
+      c.type,
+      c.title,
+      c.original_title AS originalTitle,
+      c.description,
+      c.long_description AS longDescription,
+      c.year,
+      c.duration,
+      c.seasons,
+      c.total_episodes AS totalEpisodes,
+      c.genres,
+      c.rating,
+      c.score,
+      c.popularity,
+      c.status,
+      c.featured,
+      c.thumbnail,
+      c.backdrop,
+      c.video_provider AS videoSource,
+      c.cast,
+      c.director,
+      c.country,
+      c.language,
+      c.tags,
+      c.created_at AS createdAt,
+      c.updated_at AS updatedAt,
+      h.content_id,
+      COUNT(*) AS score
+    FROM viewing_history h
+    JOIN content c ON c.id = h.content_id
+    ${where}
+    GROUP BY h.content_id
+    ORDER BY score DESC
+    LIMIT 10
+  `;
+
+  console.log(query);
+
+
+  return db.prepare(query).all() as ContentItem[];
+}
+
 export function recordWatch(userId: string, event: WatchEvent): void {
   const db = getDb();
   const hour = new Date().getUTCHours(); // Usar UTC para consistência no servidor
@@ -190,6 +248,29 @@ export function resolveRowContent(
 
   switch (row.filterType) {
     case 'genre':
+      if(row.rowType === 'top10') {
+        const top10 = getTop10(row.metadata?.period ?? 'day');
+      
+        // debug da ordem original
+        console.log('TOP10 IDS:', top10.map(t => t.content_id));
+
+        // cria mapa id -> conteúdo
+        const pubMap = new Map(pub.map(item => [item.id, item]));
+
+        // monta o pool mantendo a ordem do top10
+        pool = [];
+
+        for (const item of top10) {
+          const content = pubMap.get(item.content_id);
+          if (content) {
+            pool.push(content);
+          }
+        }
+
+        // debug da ordem final
+        console.log('POOL IDS:', pool.map(p => p.id));
+        return pool;
+      }
       pool = pub.filter(i => genres.some(g => i.genres.includes(g)));
       break;
     case 'genre_movie':
@@ -210,9 +291,29 @@ export function resolveRowContent(
     case 'new':
       pool = [...pub];
       break;
-    case 'top10':
-      pool = [...pub];
-      break;
+    // case 'top10':
+    //   const top10 = getTop10(row.metadata?.period ?? 'day');
+      
+    //   // debug da ordem original
+    //   console.log('TOP10 IDS:', top10.map(t => t.content_id));
+
+    //   // cria mapa id -> conteúdo
+    //   const pubMap = new Map(pub.map(item => [item.id, item]));
+
+    //   // monta o pool mantendo a ordem do top10
+    //   pool = [];
+
+    //   for (const item of top10) {
+    //     const content = pubMap.get(item.content_id);
+    //     if (content) {
+    //       pool.push(content);
+    //     }
+    //   }
+
+    //   // debug da ordem final
+    //   console.log('POOL IDS:', pool.map(p => p.id));
+    //   return pool;
+    //   break;
     default:
       pool = [...pub];
   }

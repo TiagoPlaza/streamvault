@@ -10,6 +10,10 @@ export interface HomeRow {
   position: number;
   active: boolean;
   rowType: 'standard' | 'top10';
+  metadata?:  {
+    period?: 'day' | 'week' | 'month' | 'all_time';
+    genreId?: string;
+  };
   createdAt: string;
 }
 
@@ -23,6 +27,10 @@ interface DbRow {
   position: number;
   active: number;
   row_type: string;
+  metadata?:  {
+    period?: 'day' | 'week' | 'month' | 'all_time';
+    genreId?: string;
+  };
   created_at: string;
 }
 
@@ -33,6 +41,7 @@ function toHomeRow(r: DbRow): HomeRow {
     sortBy: r.sort_by, contentLimit: r.content_limit,
     position: r.position, active: Boolean(r.active),
     rowType: r.row_type as 'standard' | 'top10',
+    metadata: r.metadata ? JSON.parse(r.metadata) : undefined,
     createdAt: r.created_at,
   };
 }
@@ -49,6 +58,7 @@ function ensureTable(db: ReturnType<typeof getDb>) {
       position      INTEGER NOT NULL DEFAULT 0,
       active        INTEGER NOT NULL DEFAULT 1,
       row_type      TEXT    NOT NULL DEFAULT 'standard',
+      metadata      TEXT,
       created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
     );
     CREATE INDEX IF NOT EXISTS idx_home_rows_position ON home_rows(position);
@@ -80,14 +90,18 @@ export interface HomeRowInput {
   position?: number;
   active?: boolean;
   rowType?: 'standard' | 'top10';
+  metadata?:  {
+    period?: 'day' | 'week' | 'month' | 'all_time';
+    genreId?: string;
+  };
 }
 
 export function createHomeRow(data: HomeRowInput): HomeRow {
   const db = getDb();
   const maxPos = (db.prepare('SELECT MAX(position) as m FROM home_rows').get() as { m: number | null }).m ?? 0;
   const result = db.prepare(`
-    INSERT INTO home_rows (title, filter_type, filter_value, sort_by, content_limit, position, active, row_type)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO home_rows (title, filter_type, filter_value, sort_by, content_limit, position, active, row_type, metadata)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     data.title,
     data.filterType,
@@ -97,6 +111,7 @@ export function createHomeRow(data: HomeRowInput): HomeRow {
     data.position ?? maxPos + 1,
     data.active !== false ? 1 : 0,
     data.rowType ?? 'standard',
+    JSON.stringify(data.metadata ?? {}),
   );
   return getHomeRowById(result.lastInsertRowid as number)!;
 }
@@ -113,6 +128,7 @@ export function updateHomeRow(id: number, data: Partial<HomeRowInput>): HomeRow 
   if (data.position    !== undefined) { fields.push('position = ?');       values.push(data.position); }
   if (data.active      !== undefined) { fields.push('active = ?');         values.push(data.active ? 1 : 0); }
   if (data.rowType     !== undefined) { fields.push('row_type = ?');       values.push(data.rowType); }
+  if (data.metadata    !== undefined) { fields.push('metadata = ?');       values.push(JSON.stringify(data.metadata || {})); }
   if (!fields.length) return getHomeRowById(id);
   db.prepare(`UPDATE home_rows SET ${fields.join(', ')} WHERE id = ?`).run(...values, id);
   return getHomeRowById(id);

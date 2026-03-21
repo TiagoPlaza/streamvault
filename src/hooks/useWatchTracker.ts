@@ -1,82 +1,46 @@
-'use client';
-/**
- * useWatchTracker
- *
- * Rastreia o tempo assistido e envia para /api/watch-history.
- * Deve ser montado na página /watch/[id].
- *
- * Estratégia:
- * - A cada 30s de reprodução, envia um heartbeat
- * - Ao desmontar, envia o tempo acumulado final
- */
-
 import { useEffect, useRef } from 'react';
-import { getUserId } from './useUserId';
 
-interface Props {
+interface UseWatchTrackerProps {
   contentId: string;
-  episodeId?: string;
+  currentTime: number;
   isPlaying: boolean;
+  onLoadProgress?: (seconds: number) => void;
 }
 
-export function useWatchTracker({ contentId, episodeId, isPlaying }: Props) {
-  const secondsRef    = useRef(0);   // segundos acumulados nesta sessão
-  const lastTickRef   = useRef<number | null>(null);
-  const intervalRef   = useRef<NodeJS.Timeout | null>(null);
-  const sentRef       = useRef(0);   // segundos já enviados
+export function useWatchTracker({ contentId, currentTime, isPlaying, onLoadProgress }: UseWatchTrackerProps) {
+  const lastSavedTime = useRef(0);
+  const SAVE_INTERVAL = 10; // Salvar a cada 10 segundos de diferença
 
-  async function flush(completed = false) {
-    const toSend = secondsRef.current - sentRef.current;
-    if (toSend < 5 && !completed) return;  // mínimo de 5s para enviar
-    const userId = getUserId();
-    if (!userId) return;
-    sentRef.current = secondsRef.current;
-    try {
-      await fetch('/api/watch-history', {
+  // Carregar progresso inicial
+  useEffect(() => {
+    if (!contentId) return;
+    
+    fetch(`/api/watch-history?contentId=${contentId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data.seconds > 0) {
+          if (onLoadProgress) onLoadProgress(data.data.seconds);
+          lastSavedTime.current = data.data.seconds;
+        }
+      })
+      .catch(console.error);
+  }, [contentId]);
+
+  // Salvar progresso
+  useEffect(() => {
+    if (!isPlaying || !contentId) return;
+
+    // Só salva se avançou X segundos desde o último save
+    if (Math.abs(currentTime - lastSavedTime.current) >= SAVE_INTERVAL) {
+      const timeToSave = Math.floor(currentTime);
+      
+      fetch('/api/watch-history', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, contentId, episodeId, secondsWatched: toSend, completed }),
-        keepalive: true,
-      });
-    } catch {}
-  }
-
-  useEffect(() => {
-    // Reseta ao trocar de conteúdo
-    secondsRef.current = 0;
-    sentRef.current    = 0;
-    lastTickRef.current = null;
-  }, [contentId, episodeId]);
-
-  useEffect(() => {
-    if (isPlaying) {
-      lastTickRef.current = Date.now();
-      intervalRef.current = setInterval(() => {
-        if (lastTickRef.current) {
-          const elapsed = (Date.now() - lastTickRef.current) / 1000;
-          secondsRef.current += elapsed;
-          lastTickRef.current = Date.now();
-        }
-        // Heartbeat a cada ~30s acumulados
-        if (secondsRef.current - sentRef.current >= 30) flush();
-      }, 1000);
-    } else {
-      if (lastTickRef.current) {
-        const elapsed = (Date.now() - lastTickRef.current) / 1000;
-        secondsRef.current += elapsed;
-        lastTickRef.current = null;
-      }
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      flush();
+        body: JSON.stringify({ contentId, seconds: timeToSave }),
+      }).then(() => {
+        lastSavedTime.current = timeToSave;
+      }).catch(console.error);
     }
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isPlaying, contentId, episodeId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Flush final ao desmontar
-  useEffect(() => {
-    return () => { flush(); };
-  }, [contentId, episodeId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentTime, isPlaying, contentId]);
 }

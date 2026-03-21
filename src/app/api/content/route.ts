@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       genre:   q.get('genre')   ?? undefined,
       orderBy: (q.get('orderBy') ?? 'created_at') as 'score' | 'year' | 'popularity' | 'title',
       order:   (q.get('order')  ?? 'desc') as 'asc' | 'desc',
-      limit:   q.has('limit')  ? Number(q.get('limit'))  : 100,
+      limit:   q.has('limit')  ? Number(q.get('limit'))  : 500,
       offset:  q.has('offset') ? Number(q.get('offset')) : 0,
     });
     return ok(result);

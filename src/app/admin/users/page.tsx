@@ -19,8 +19,12 @@ export default function AdminUsersPage() {
       try {
         const res = await fetch('/api/users');
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Falha ao carregar usuários');
-        setUsers(data.data);
+        if (!data.ok) throw new Error(data.error?.message || 'Falha ao carregar usuários');
+        
+        // Suporte à estrutura paginada: { success: true, data: { data: [...], pagination: ... } }
+        // Se a API retornar paginação, os usuários estarão em data.data.data
+        const userList = data.data.data || data.data || [];
+        setUsers(userList);
       } catch (err: any) {
         setError(err.message);
       } finally {

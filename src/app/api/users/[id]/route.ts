@@ -9,17 +9,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   try {
     const session = await getSession();
     if (!session || session.role !== 'admin') {
-      return err('Não autorizado', 403);
+      return err('Forbidden', 403, 'FORBIDDEN');
     }
 
     // Um admin não pode alterar o próprio cargo
     if (session.id === params.id) {
-      return err('Não é permitido alterar o próprio cargo.', 400);
+      return err('Cannot change own role', 400, 'INVALID_OPERATION');
     }
 
     const { role } = await req.json();
     if (role !== 'admin' && role !== 'user') {
-      return err('Cargo inválido', 400);
+      return err('Invalid role', 400, 'INVALID_DATA');
     }
 
     const success = updateUserRole(params.id, role as UserRole);
@@ -36,12 +36,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   try {
     const session = await getSession();
     if (!session || session.role !== 'admin') {
-      return err('Não autorizado', 403);
+      return err('Forbidden', 403, 'FORBIDDEN');
     }
 
     // Um admin não pode deletar a si mesmo
     if (session.id === params.id) {
-      return err('Não é permitido deletar a si mesmo.', 400);
+      return err('Cannot delete self', 400, 'INVALID_OPERATION');
     }
 
     const success = deleteUser(params.id);
