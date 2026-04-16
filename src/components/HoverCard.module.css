@@ -8,6 +8,7 @@
   box-shadow: 0 6px 40px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.08);
   animation: popIn .18s cubic-bezier(.34,1.56,.64,1) both;
   pointer-events: all;
+  text-decoration: none;
 }
 
 @keyframes popIn {

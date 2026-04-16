@@ -15,6 +15,7 @@ interface HomeRow {
   metadata?: {
     period?: 'day' | 'week' | 'month' | 'all_time';
     genreId?: string;
+    type?: 'movie' | 'series' | 'both';
   } | null;
 }
 
@@ -40,7 +41,7 @@ const SORT_OPTIONS = [
 const BLANK: Omit<HomeRow, 'id'> = {
   title: '', filterType: 'genre', filterValue: '',
   sortBy: 'popularity', contentLimit: 20,
-  position: 0, active: true, rowType: 'standard', metadata: {}
+  position: 0, active: true, rowType: 'standard', metadata: { period: 'week', type: 'both' }
 };
 
 // ─── Sub‑componente de formulário (reutilizado em Nova e Edição) ─────────────
@@ -76,7 +77,18 @@ function RowForm({ value, onChange, onSave, onCancel, saving, error, mode }: Row
         </div>
         <div className={styles.field}>
           <label className={styles.label}>Visual</label>
-          <select className={styles.select} value={value.rowType} onChange={e => onChange('rowType', e.target.value)}>
+          <select className={styles.select} value={value.rowType} onChange={e => {
+            const rowType = e.target.value as 'standard' | 'top10';
+            onChange('rowType', rowType);
+            if (rowType === 'top10') {
+              onChange('filterType', 'top10');
+              onChange('filterValue', '');
+              onChange('metadata', { ...value.metadata, period: value.metadata?.period || 'week', type: value.metadata?.type || 'both' });
+            } else if (value.filterType === 'top10') {
+              onChange('filterType', 'genre');
+              onChange('metadata', {});
+            }
+          }}>
             <option value="standard">Carrossel padrão (16:9)</option>
             <option value="top10">Top 10 — poster vertical + número</option>
           </select>
@@ -85,7 +97,7 @@ function RowForm({ value, onChange, onSave, onCancel, saving, error, mode }: Row
 
       {/* Linha 2: filtro + valor + ordenação */}
       {isTop10 ? (
-        <div className={styles.grid2}>
+        <div className={styles.grid3}>
           <div className={styles.field}>
             <label className={styles.label}>Período do Ranking</label>
             <select
@@ -97,6 +109,18 @@ function RowForm({ value, onChange, onSave, onCancel, saving, error, mode }: Row
               <option value="week">Esta Semana</option>
               <option value="month">Este Mês</option>
               <option value="all_time">Todo o Tempo</option>
+            </select>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Tipo de Conteúdo</label>
+            <select
+              className={styles.select}
+              value={value.metadata?.type || 'both'}
+              onChange={e => onChange('metadata', { ...value.metadata, type: e.target.value })}
+            >
+              <option value="both">Filmes e Séries</option>
+              <option value="movie">Apenas Filmes</option>
+              <option value="series">Apenas Séries</option>
             </select>
           </div>
           <div className={styles.field}>

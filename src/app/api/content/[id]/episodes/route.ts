@@ -33,6 +33,8 @@ export async function POST(req: NextRequest, { params }: Params) {
       thumbnail:   body.thumbnail?.trim() ?? '',
       videoSource: body.videoSource as VideoSource | undefined,
       releaseDate: body.releaseDate ?? '',
+      openingStart: body.openingStart ?? '',
+      openingEnd: body.openingEnd ?? '',
     });
 
     return ok(episode, 201);
@@ -57,6 +59,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
       thumbnail:   String(ep.thumbnail ?? '').trim(),
       videoSource: ep.videoSource as VideoSource | undefined,
       releaseDate: String(ep.releaseDate ?? ''),
+      openingStart: String(ep.openingStart ?? ''),
+      openingEnd: String(ep.openingEnd ?? ''),  
     })));
 
     return ok(episodes);

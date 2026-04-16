@@ -8,7 +8,7 @@
 
 import { randomUUID } from 'crypto';
 import getDb from './db';
-import type { ContentItem, ContentType, ContentStatus, ContentRating, VideoSource } from '@/types/content';
+import type { ContentItem, ContentType, ContentStatus, ContentRating, VideoSource, PreviewSource } from '@/types/content';
 
 // ─── Tipos internos do banco ──────────────────────────────────────────────────
 
@@ -31,6 +31,8 @@ interface DbRow {
   featured: number;
   thumbnail: string;
   backdrop: string;
+  preview_provider: string | null;
+  preview_id: string | null;
   video_provider: string | null;
   video_id: string | null;
   cast: string;
@@ -48,6 +50,10 @@ function rowToItem(row: DbRow): ContentItem {
   const videoSource: VideoSource | undefined =
     row.video_provider && row.video_id
       ? { provider: row.video_provider as 'youtube' | 'vimeo', videoId: row.video_id }
+      : undefined;
+  const previewSource: PreviewSource | undefined =
+    row.preview_provider && row.preview_id
+      ? { previewProvider: row.preview_provider as 'youtube' | 'vimeo', previewId: row.preview_id }
       : undefined;
 
   return {
@@ -70,6 +76,7 @@ function rowToItem(row: DbRow): ContentItem {
     thumbnail: row.thumbnail,
     backdrop: row.backdrop,
     videoSource,
+    previewSource,
     cast: JSON.parse(row.cast) as string[],
     director: row.director ?? undefined,
     country: row.country,
@@ -165,6 +172,7 @@ export interface CreateContentData {
   thumbnail: string;
   backdrop: string;
   videoSource?: VideoSource;
+  previewSource?: PreviewSource;
   cast: string[];
   director?: string;
   country: string;
@@ -180,23 +188,39 @@ export function createContent(data: CreateContentData): ContentItem {
     INSERT INTO content (
       id, type, title, original_title, description, long_description,
       year, duration, seasons, total_episodes, genres, rating, score,
-      popularity, status, featured, thumbnail, backdrop,
+      popularity, status, featured, thumbnail, backdrop, preview_provider, preview_id, 
       video_provider, video_id, cast, director, country, language, tags
     ) VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )
   `);
 
   stmt.run(
-    id, data.type, data.title, data.originalTitle ?? null,
-    data.description, data.longDescription ?? null,
-    data.year, data.duration ?? null, data.seasons ?? null, data.totalEpisodes ?? null,
-    JSON.stringify(data.genres), data.rating, data.score,
-    data.popularity ?? 0, data.status, data.featured ? 1 : 0,
-    data.thumbnail, data.backdrop,
-    data.videoSource?.provider ?? null, data.videoSource?.videoId ?? null,
-    JSON.stringify(data.cast), data.director ?? null,
-    data.country, data.language, JSON.stringify(data.tags)
+    id, 
+    data.type, 
+    data.title, 
+    data.originalTitle ?? null,
+    data.description, 
+    data.longDescription ?? null,
+    data.year, 
+    data.duration ?? null, 
+    data.seasons ?? null, 
+    data.totalEpisodes ?? null,
+    JSON.stringify(data.genres), 
+    data.rating, data.score,
+    data.popularity ?? 0, 
+    data.status, data.featured ? 1 : 0,
+    data.thumbnail, 
+    data.backdrop,
+    data.previewSource?.previewProvider ?? null, 
+    data.previewSource?.previewId ?? null,
+    data.videoSource?.provider ?? null, 
+    data.videoSource?.videoId ?? null,
+    JSON.stringify(data.cast), 
+    data.director ?? null,
+    data.country, 
+    data.language, 
+    JSON.stringify(data.tags)
   );
 
   return getContentById(id)!;

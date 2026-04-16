@@ -304,7 +304,7 @@ export const MOCK_CONTENT: ContentItem[] = [
   },
 ];
 
-export const GENRES = ['Animação', 'Ação', 'Aventura', 'Arte', 'Comédia', 'Drama', 'Documentário', 'Experimental', 'Família', 'Fantasia', 'Ficção Científica', 'Natureza', 'Tecnologia', 'Terror'];
+export const GENRES = [ "Animação", "Arte", "Aventura", "Ação", "Cinema TV", "Comédia", "Crime", "Documentário", "Drama", "Experimental", "Família", "Fantasia", "Faroeste", "Ficção Científica", "Guerra", "História", "Mistério", "Música", "Natureza", "Romance", "Tecnologia", "Terror" ];
 export const RATINGS = ['L', '10', '12', '14', '16', '18'];
 export const COUNTRIES = ['Holanda', 'Brasil', 'EUA', 'Internacional', 'França', 'Alemanha'];
 export const LANGUAGES = ['Português', 'Inglês', 'Sem diálogo', 'Multilíngue', 'Espanhol'];

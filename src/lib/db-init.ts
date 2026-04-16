@@ -21,34 +21,36 @@ const MIGRATIONS: Migration[] = [
     up: (db) => {
       db.exec(`
         CREATE TABLE IF NOT EXISTS content (
-          id              TEXT    PRIMARY KEY,
-          type            TEXT    NOT NULL CHECK(type IN ('movie', 'series')),
-          title           TEXT    NOT NULL,
-          original_title  TEXT,
-          description     TEXT    NOT NULL,
-          long_description TEXT,
-          year            INTEGER NOT NULL,
-          duration        INTEGER,
-          seasons         INTEGER,
-          total_episodes  INTEGER,
-          genres          TEXT    NOT NULL DEFAULT '[]',  -- JSON array
-          rating          TEXT    NOT NULL DEFAULT 'L',
-          score           REAL    NOT NULL DEFAULT 7.0,
-          popularity      INTEGER NOT NULL DEFAULT 0,
-          status          TEXT    NOT NULL DEFAULT 'draft'
-                                  CHECK(status IN ('published', 'draft', 'archived')),
-          featured        INTEGER NOT NULL DEFAULT 0,    -- boolean
-          thumbnail       TEXT    NOT NULL,
-          backdrop        TEXT    NOT NULL DEFAULT '',
-          video_provider  TEXT,                          -- 'youtube' | 'vimeo'
-          video_id        TEXT,
-          cast            TEXT    NOT NULL DEFAULT '[]', -- JSON array
-          director        TEXT,
-          country         TEXT    NOT NULL DEFAULT 'Internacional',
-          language        TEXT    NOT NULL DEFAULT 'Português',
-          tags            TEXT    NOT NULL DEFAULT '[]', -- JSON array
-          created_at      TEXT    NOT NULL DEFAULT (datetime('now')),
-          updated_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+          id                TEXT    PRIMARY KEY,
+          type              TEXT    NOT NULL CHECK(type IN ('movie', 'series')),
+          title             TEXT    NOT NULL,
+          original_title    TEXT,
+          description       TEXT    NOT NULL,
+          long_description  TEXT,
+          year              INTEGER NOT NULL,
+          duration          INTEGER,
+          seasons           INTEGER,
+          total_episodes    INTEGER,
+          genres            TEXT    NOT NULL DEFAULT '[]',  -- JSON array
+          rating            TEXT    NOT NULL DEFAULT 'L',
+          score             REAL    NOT NULL DEFAULT 7.0,
+          popularity        INTEGER NOT NULL DEFAULT 0,
+          status            TEXT    NOT NULL DEFAULT 'draft'
+                                    CHECK(status IN ('published', 'draft', 'archived')),
+          featured          INTEGER NOT NULL DEFAULT 0,    -- boolean
+          thumbnail         TEXT    NOT NULL,
+          backdrop          TEXT    NOT NULL DEFAULT '',
+          preview_provider  TEXT,                          -- 'youtube' | 'vimeo'
+          preview_id        TEXT,
+          video_provider    TEXT,                          -- 'youtube' | 'vimeo'
+          video_id          TEXT,
+          cast              TEXT    NOT NULL DEFAULT '[]', -- JSON array
+          director          TEXT,
+          country           TEXT    NOT NULL DEFAULT 'Internacional',
+          language          TEXT    NOT NULL DEFAULT 'Português',
+          tags              TEXT    NOT NULL DEFAULT '[]', -- JSON array
+          created_at        TEXT    NOT NULL DEFAULT (datetime('now')),
+          updated_at        TEXT    NOT NULL DEFAULT (datetime('now'))
         );
 
         -- Índices para queries comuns
@@ -160,6 +162,8 @@ const MIGRATIONS: Migration[] = [
           active      INTEGER NOT NULL DEFAULT 1,
           row_type    TEXT    NOT NULL DEFAULT 'standard',
           -- row_type: standard | top10
+          metadata    TEXT    NOT NULL DEFAULT '{}',
+          -- JSON para customizações futuras (ex: { "period": "week" } para top10)
           created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
         );
         CREATE INDEX IF NOT EXISTS idx_home_rows_position ON home_rows(position);
@@ -252,7 +256,6 @@ export function initSchema(db: Database.Database): void {
   for (const migration of sorted) {
     const applied = getApplied.get(migration.version);
     if (!getApplied.get(migration.version)) {
-      console.log(`[DB] Applying migration ${migration.version}: ${migration.name}`);
       db.transaction(() => {
         migration.up(db);
         insertHistory.run(migration.version, migration.name);

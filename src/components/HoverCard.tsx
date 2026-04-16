@@ -6,17 +6,18 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ContentItem } from '@/types/content';
 import { formatDuration } from '@/utils/helpers';
+import { getRatingColor } from '@/lib/rate-limit';
 import styles from './HoverCard.module.css';
 
 // ─── Utilitário: URL de preview muted ────────────────────────────────────────
 
 export function previewUrl(item: ContentItem): string | null {
-  const vs = item.videoSource;
+  const vs = item.previewSource;
   if (!vs) return null;
-  if (vs.provider === 'youtube')
-    return `https://www.youtube.com/embed/${vs.videoId}?autoplay=1&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&loop=1&playlist=${vs.videoId}&start=10`;
-  if (vs.provider === 'vimeo')
-    return `https://player.vimeo.com/video/${vs.videoId}?autoplay=1&muted=1&controls=0&autopause=0&loop=1&transparent=0`;
+  if (vs.previewProvider === 'youtube')
+    return `https://www.youtube.com/embed/${vs.previewId}?autoplay=1&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&loop=1&playlist=${vs.previewId}&start=0`;
+  if (vs.previewProvider === 'vimeo')
+    return `https://player.vimeo.com/video/${vs.previewId}?autoplay=1&muted=1&controls=0&autopause=0&loop=1&transparent=0`;
   return null;
 }
 
@@ -51,74 +52,74 @@ function Popover({ item, anchorRect, onClose, cancelClose }: PopoverProps) {
   if (left + popW > vw - 16) left = vw - popW - 16;
 
   return createPortal(
-    <>
-      <Link
-        href={`/watch/${item.id}`}
-        className={styles.popover}
-        style={{ left, top, width: popW }}
-        onMouseEnter={cancelClose}
-        onMouseLeave={onClose}
-      >
-        {/* ── Vídeo / imagem ── */}
-        <div className={styles.popVideo}>
-          {/* {pUrl ? ( */}
-            <iframe
-              src={pUrl ? pUrl : ''}
-              className={styles.popIframe}
-              allow="autoplay; encrypted-media"
-              title={item.title}
-            />
-          {/* ) : !imgErr ? ( */}
-            <img
-              src={item.thumbnail}
-              alt={item.title}
-              className={styles.popImg}
-              onError={() => setImgErr(true)}
-            />
-          {/* ) : ( */}
-            <div className={styles.popFallback}><span>▶</span></div>
-          {/* )} */}
-          <div className={styles.popVideoGradient} />
-          <h3 className={styles.popTitleOnVideo}>{item.title}</h3>
-        </div>
+    <Link
+      href={`/watch/${item.id}`}
+      className={styles.popover}
+      style={{ left, top, width: popW }}
+      onMouseEnter={cancelClose}
+      onMouseLeave={onClose}
+    >
+      {/* ── Vídeo / imagem ── */}
+      <div className={styles.popVideo}>
+        {/* {pUrl ? ( */}
+          <iframe
+            src={pUrl ? pUrl : ''}
+            className={styles.popIframe}
+            allow="autoplay; encrypted-media"
+            title={item.title}
+          />
+        {/* ) : !imgErr ? ( */}
+          <img
+            src={item.thumbnail}
+            alt={item.title}
+            className={styles.popImg}
+            onError={() => setImgErr(true)}
+          />
+        {/* ) : ( */}
+          <div className={styles.popFallback}><span>▶</span></div>
+        {/* )} */}
+        <div className={styles.popVideoGradient} />
+        <h3 className={styles.popTitleOnVideo}>{item.title}</h3>
+      </div>
 
-        {/* ── Botões ── */}
-        <div className={styles.popControls}>
-          <button
-            className={styles.popPlayBtn}
-            onClick={() => router.push(`/watch/${item.id}`)}
-          >
-            <PlayIcon /><span>Assistir</span>
-          </button>
-          <Link
-            href={`/watch/${item.id}`}
-            className={styles.popInfoBtn}
-            title="Mais informações"
-          >
-            <InfoIcon />
-          </Link>
+      {/* ── Botões ── */}
+      <div className={styles.popControls}>
+        <button
+          className={styles.popPlayBtn}
+          onClick={() => router.push(`/watch/${item.id}`)}
+        >
+          <PlayIcon /><span>Assistir</span>
+        </button>
+        <div
+          className={styles.popInfoBtn}
+          title="Mais informações"
+        >
+          <InfoIcon />
         </div>
+      </div>
 
-        {/* ── Metadata ── */}
-        <div className={styles.popMeta}>
-          <div className={styles.popMetaRow}>
-            <span className={styles.popScore}>★ {item.score.toFixed(1)}</span>
-            <span className={styles.popYear}>{item.year}</span>
-            <span className={styles.popRating}>{item.rating}</span>
-            {item.duration && <span className={styles.popDur}>{formatDuration(item.duration)}</span>}
-            {item.seasons  && <span className={styles.popDur}>{item.seasons} temp.</span>}
-          </div>
-          <div className={styles.popGenres}>
-            {item.genres.slice(0, 3).map((g, i) => (
-              <React.Fragment key={g}>
-                {i > 0 && <span className={styles.popDot}>·</span>}
-                <span>{g}</span>
-              </React.Fragment>
-            ))}
-          </div>
+      {/* ── Metadata ── */}
+      <div className={styles.popMeta}>
+        <div className={styles.popMetaRow}>
+          <span className={styles.popScore}>★ {item.score.toFixed(1)}</span>
+          <span className={styles.popYear}>{item.year}</span>
+          <span 
+            className={styles.popRating}
+            style={getRatingColor(item.rating)}
+          >{item.rating}</span>
+          {item.duration && <span className={styles.popDur}>{formatDuration(item.duration)}</span>}
+          {item.seasons  && <span className={styles.popDur}>{item.seasons} temp.</span>}
         </div>
-      </Link>
-    </>,
+        <div className={styles.popGenres}>
+          {item.genres.slice(0, 3).map((g, i) => (
+            <React.Fragment key={g}>
+              {i > 0 && <span className={styles.popDot}>·</span>}
+              <span>{g}</span>
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    </Link>,
     document.body
   );
 }

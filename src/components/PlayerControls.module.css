@@ -1,8 +1,39 @@
 .controls {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 0 0 8px;
+}
+.contentControls {
   background: linear-gradient(transparent, rgba(0,0,0,.9));
   transition: opacity .3s, transform .3s; z-index: 10;
+  padding: 0 0 8px;
+}
+.skipOpeningFloating {
+  position: absolute;
+  /* Ajuste o bottom conforme a altura total da sua barra de ferramentas */
+  bottom: 85px; 
+  right: 25px;
+  
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  background-color: rgba(255, 255, 255, 0.85);
+  color: black;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(5px);
+  
+  /* Animação para não aparecer do nada */
+  animation: slideInRight 0.3s ease-out;
+}
+.skipOpeningFloating:hover {
+  background-color: rgba(230,57,70,0.4);
+  border-color: rgba(var(--accent-rgb), .4);
+  color: #fff;
 }
 .visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .hidden { opacity: 0; transform: translateY(4px); pointer-events: none; }
@@ -56,6 +87,7 @@
   background: rgba(10,10,15,.97); border: 1px solid rgba(255,255,255,.1);
   border-radius: 8px; overflow: hidden; min-width: 72px;
   box-shadow: 0 8px 24px rgba(0,0,0,.6);
+  z-index: 2;
 }
 .rateOpt { display: block; width: 100%; padding: 7px 12px; background: none; border: none; color: rgba(255,255,255,.7); font-size: 12px; font-family: 'JetBrains Mono', monospace; text-align: center; cursor: pointer; transition: background .1s, color .1s; }
 .rateOpt:hover { background: rgba(255,255,255,.08); color: #fff; }

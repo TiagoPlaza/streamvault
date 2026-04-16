@@ -12,7 +12,7 @@ export default function ContentRow({ title, items }: Props) {
 
   const scroll = (dir: 'left' | 'right') => {
     if (!rowRef.current) return;
-    rowRef.current.scrollBy({ left: dir === 'left' ? -400 : 400, behavior: 'smooth' });
+    rowRef.current.scrollBy({ left: dir === 'left' ? -278 : 278, behavior: 'smooth' });
   };
 
   return (

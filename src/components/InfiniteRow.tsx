@@ -17,7 +17,6 @@ interface CardProps { item: ContentItem }
 function MiniCard({ item }: CardProps) {
   const [err, setErr] = React.useState(false);
   const hasVideo = !!item.videoSource;
-  console.log("VIDEO: ", item)
   return (
     <Link href={`/watch/${item.id}`} className={styles.card}>
       <div className={styles.thumb}>

@@ -1,10 +1,9 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import ContentCard from '@/components/ContentCard';
 import { useContent } from '@/context/ContentContext';
-import { GENRES } from '@/lib/mockData';
 import styles from './page.module.css';
 
 export default function BrowsePage() {
@@ -16,6 +15,25 @@ export default function BrowsePage() {
   const [genreFilter, setGenreFilter] = useState('');
   const [sort, setSort] = useState<'score' | 'year' | 'popularity' | 'title'>('popularity');
   const [search, setSearch] = useState('');
+  const [genres, setGenres] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function loadGenres() {
+      try {
+        const response = await fetch('/api/genres');
+        if (!response.ok) throw new Error('Falha ao carregar gêneros');
+        const { data } = await response.json();
+        if(data){
+          console.log('Gêneros carregados:', data);
+          setGenres(Array.isArray(data) ? data.map((genre: any) => genre.name).filter(Boolean) : []);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar gêneros:', error);
+        setGenres([]);
+      }
+    }
+    loadGenres();
+  }, []);
 
   const filtered = useMemo(() => {
     let list = items.filter(i => i.status === 'published');
@@ -61,7 +79,7 @@ export default function BrowsePage() {
             <span className={styles.filterLabel}>Gênero</span>
             <button className={`${styles.chip} ${!genreFilter ? styles.chipActive : ''}`}
               onClick={() => setGenreFilter('')}>Todos</button>
-            {GENRES.slice(0, 8).map(g => (
+            {genres.map(g => (
               <button key={g} className={`${styles.chip} ${genreFilter === g ? styles.chipActive : ''}`}
                 onClick={() => setGenreFilter(g === genreFilter ? '' : g)}>{g}</button>
             ))}

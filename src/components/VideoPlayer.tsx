@@ -12,10 +12,12 @@ interface Props {
   autoplay?: boolean;
   title?: string;
   thumbnail?: string;
+  openingStart?: number; // Tempo inicial da abertura (em segundos)
+  openingEnd?: number;   // Tempo final da abertura (em segundos)
   onStateChange?: (isPlaying: boolean) => void;
 }
 
-function YouTubeEmbed({ source, autoplay, title, thumbnail, onStateChange }: Props) {
+function YouTubeEmbed({ source, autoplay, title, thumbnail, openingStart, openingEnd, onStateChange }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [started, setStarted] = useState(autoplay ?? false)
   const player = useYouTubePlayer(source.videoId);
@@ -35,7 +37,6 @@ function YouTubeEmbed({ source, autoplay, title, thumbnail, onStateChange }: Pro
 
   const thumbDefalth = `https://i.ytimg.com/vi/${source.videoId}/hqdefault.jpg`
 
-  console.log("Player: ", player)
   return (
     <div ref={containerRef} className={styles.wrap} onClick={() => player.togglePlay()}>
       {/* Thumbnail antes do vídeo iniciar */}
@@ -60,18 +61,29 @@ function YouTubeEmbed({ source, autoplay, title, thumbnail, onStateChange }: Pro
         </div>
       )}
       <PlayerControls
-        state={player.state} currentTime={player.currentTime} duration={player.duration}
-        volume={player.volume} muted={player.muted} playbackRate={player.playbackRate}
-        buffered={player.buffered} isFullscreen={player.isFullscreen} containerRef={containerRef}
-        onTogglePlay={player.togglePlay} onSeek={player.seek}
-        onVolumeChange={player.setVolume} onToggleMute={player.toggleMute}
-        onPlaybackRateChange={player.setPlaybackRate} onToggleFullscreen={() => {}}
+        state={player.state}
+        currentTime={player.currentTime}
+        duration={player.duration}
+        volume={player.volume}
+        muted={player.muted}
+        playbackRate={player.playbackRate}
+        buffered={player.buffered}
+        isFullscreen={player.isFullscreen}
+        openingStart={openingStart}
+        openingEnd={openingEnd}
+        containerRef={containerRef}
+        onTogglePlay={player.togglePlay}
+        onSeek={player.seek}
+        onVolumeChange={player.setVolume}
+        onToggleMute={player.toggleMute}
+        onPlaybackRateChange={player.setPlaybackRate}
+        onToggleFullscreen={() => {}}
       />
     </div>
   );
 }
 
-function VimeoEmbed({ source, autoplay, title, thumbnail, onStateChange }: Props) {
+function VimeoEmbed({ source, autoplay, title, thumbnail, openingStart, openingEnd, onStateChange }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [started, setStarted] = useState(autoplay ?? false)
   const player = useVimeoPlayer(source.videoId);
@@ -113,12 +125,23 @@ function VimeoEmbed({ source, autoplay, title, thumbnail, onStateChange }: Props
         </div>
       )}
       <PlayerControls
-        state={player.state} currentTime={player.currentTime} duration={player.duration}
-        volume={player.volume} muted={player.muted} playbackRate={player.playbackRate}
-        buffered={player.buffered} isFullscreen={player.isFullscreen} containerRef={containerRef}
-        onTogglePlay={player.togglePlay} onSeek={player.seek}
-        onVolumeChange={player.setVolume} onToggleMute={player.toggleMute}
-        onPlaybackRateChange={player.setPlaybackRate} onToggleFullscreen={() => {}}
+        state={player.state}
+        currentTime={player.currentTime}
+        duration={player.duration}
+        volume={player.volume}
+        muted={player.muted}
+        playbackRate={player.playbackRate}
+        buffered={player.buffered}
+        isFullscreen={player.isFullscreen}
+        openingStart={openingStart}
+        openingEnd={openingEnd}
+        containerRef={containerRef}
+        onTogglePlay={player.togglePlay}
+        onSeek={player.seek}
+        onVolumeChange={player.setVolume}
+        onToggleMute={player.toggleMute}
+        onPlaybackRateChange={player.setPlaybackRate}
+        onToggleFullscreen={() => {}}
       />
     </div>
   );

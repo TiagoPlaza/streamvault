@@ -1,6 +1,6 @@
-import { VideoSource } from '@/types/content';
+import { VideoSource, PreviewSource } from '@/types/content';
 
-export function parseVideoUrl(url: string): VideoSource | null {
+export function parseVideoUrl(url: string): VideoSource | PreviewSource | null {
   const youtubePatterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
     /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,

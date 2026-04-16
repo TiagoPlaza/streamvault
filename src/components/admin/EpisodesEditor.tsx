@@ -13,6 +13,8 @@ export interface EpisodeDraft {
   thumbnail: string;
   videoUrl: string;
   releaseDate: string;
+  openingStart?: string;
+  openingEnd?: string;
 }
 
 interface Props {
@@ -23,9 +25,16 @@ interface Props {
 function blankEpisode(season: number, episode: number): EpisodeDraft {
   return {
     _key: `${Date.now()}_${Math.random()}`,
-    season, episode,
-    title: '', description: '', duration: '',
-    thumbnail: '', videoUrl: '', releaseDate: '',
+    season, 
+    episode,
+    title: '', 
+    description: '', 
+    duration: '',
+    thumbnail: '',
+    videoUrl: '', 
+    releaseDate: '',
+    openingStart: '',
+    openingEnd: ''
   };
 }
 
@@ -50,7 +59,6 @@ interface EpRowProps {
 
 function EpRow({ ep, onUpdate, onDelete, isOpen, onToggle }: EpRowProps) {
   const videoError = ep.videoUrl && !parseVideoUrl(ep.videoUrl);
-
   return (
     <div className={styles.epCard}>
       <div className={styles.epHeader} onClick={() => onToggle(ep._key)}>
@@ -128,6 +136,30 @@ function EpRow({ ep, onUpdate, onDelete, isOpen, onToggle }: EpRowProps) {
                 type="date"
                 value={ep.releaseDate}
                 onChange={e => onUpdate(ep._key, 'releaseDate', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className={styles.epGrid2}>
+            <div className={styles.epField}>
+              <label className={styles.epLabel}>Início da abertura</label>
+              <input
+                type='time'
+                step="1"
+                className={styles.epInput}
+                value={ep.openingStart}
+                onChange={e => onUpdate(ep._key, 'openingStart', e.target.value)}
+                placeholder="https://youtube.com/watch?v=..."
+              />
+            </div>
+            <div className={styles.epField}>
+              <label className={styles.epLabel}>Termino da abertura</label>
+              <input
+                className={styles.epInput}
+                type='time'
+                step="1"
+                value={ep.openingEnd}
+                onChange={e => onUpdate(ep._key, 'openingEnd', e.target.value)}
               />
             </div>
           </div>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ContentItem } from '@/types/content';
 import { formatDuration } from '@/utils/helpers';
 import styles from './HeroSection.module.css';
+import { getRatingColor } from '@/lib/rate-limit';
 
 interface Props { items: ContentItem[]; }
 
@@ -44,7 +45,10 @@ export default function HeroSection({ items }: Props) {
           <span className={styles.dot}>·</span>
           <span className={styles.year}>{active.year}</span>
           <span className={styles.dot}>·</span>
-          <span className={styles.rating}>{active.rating}</span>
+          <span 
+            className={styles.rating}
+            style={getRatingColor(active.rating)}
+          >{active.rating}</span>
           {active.duration && <><span className={styles.dot}>·</span><span className={styles.dur}>{formatDuration(active.duration)}</span></>}
           {active.seasons && <><span className={styles.dot}>·</span><span className={styles.dur}>{active.seasons} temporada{active.seasons > 1 ? 's' : ''}</span></>}
         </div>

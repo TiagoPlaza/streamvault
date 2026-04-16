@@ -17,7 +17,7 @@ export default function ContentCard({ item, size = 'md' }: Props) {
         <Link
           ref={triggerProps.ref as React.RefObject<HTMLAnchorElement>}
           href={`/watch/${item.id}`}
-          className={`${styles.card} ${styles[size]} ${isOpen ? styles.cardActive : ''}`}
+          className={`${styles.card}${styles[size] ? ` ${styles[size]}` : ''}${isOpen ? ` ${styles.cardActive}` : ''}`}
           onMouseEnter={triggerProps.onMouseEnter}
           onMouseLeave={triggerProps.onMouseLeave}
         >

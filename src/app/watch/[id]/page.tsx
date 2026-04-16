@@ -9,7 +9,7 @@ import { recordWatchHistory, getEpisodesForSeries } from '@/services/api-client.
 import { useContent } from '@/context/ContentContext';
 import { formatDuration, formatViews, formatDate } from '@/utils/helpers';
 import type { Episode } from '@/types/content';
-import { useWatchTracker } from '@/hooks/useWatchTracker';
+import { getRatingColor } from '@/lib/rate-limit';
 import { useUserId } from '@/hooks/useUserId';
 import styles from './page.module.css';
 
@@ -94,6 +94,34 @@ export default function WatchPage() {
   const [loadingEps, setLoadingEps]   = useState(false);
   const [currentEp, setCurrentEp]     = useState<Episode | null>(null);
   const [activeSeason, setActiveSeason] = useState(1);
+
+  /**
+   * Converte uma string de tempo (HH:mm:ss ou mm:ss) para o total de segundos.
+   * Exemplo: "00:03:58" -> 238 segundos
+   */
+  const timeToSeconds = (timeString: string | undefined): number => {
+    if (!timeString) return 0;
+
+    // Divide a string em partes [HH, MM, SS]
+    const parts = timeString.split(':').map(Number);
+    
+    let seconds = 0;
+
+    if (parts.length === 3) {
+      // Formato HH:MM:SS
+      const [hours, minutes, secs] = parts;
+      seconds = (hours * 3600) + (minutes * 60) + secs;
+    } else if (parts.length === 2) {
+      // Formato MM:SS
+      const [minutes, secs] = parts;
+      seconds = (minutes * 60) + secs;
+    } else if (parts.length === 1) {
+      // Apenas SS
+      seconds = parts[0];
+    }
+
+    return seconds;
+  }
 
   useEffect(() => {
     // 1. Bloqueios de segurança: só prossegue se tiver usuário e o item principal
@@ -191,7 +219,6 @@ export default function WatchPage() {
   );
 
   const isSeries = item.type === 'series';
-
   return (
     <div className={styles.page}>
       <Navbar />
@@ -212,7 +239,14 @@ export default function WatchPage() {
                   </div>
                 ) : videoSource ? (
                   <>
-                    <VideoPlayer source={videoSource} title={currentEp?.title ?? item.title} thumbnail={item?.thumbnail} onStateChange={setIsPlaying} />
+                    <VideoPlayer 
+                      source={videoSource}
+                      title={currentEp?.title ?? item.title} 
+                      thumbnail={item?.thumbnail} 
+                      onStateChange={setIsPlaying} 
+                      openingStart={currentEp?.openingStart ? timeToSeconds(currentEp?.openingStart) : 0}
+                      openingEnd={currentEp?.openingEnd ? timeToSeconds(currentEp?.openingEnd) : 0}
+                    />
                     {currentEp && (
                       <div className={styles.nowPlaying}>
                         <span className={styles.nowBadge}>▶ Assistindo</span>
@@ -234,7 +268,10 @@ export default function WatchPage() {
               <div className={styles.seriesInfo}>
                 <div className={styles.badges}>
                   <span className={styles.typeBadge}>Série</span>
-                  <span className={styles.ratingBadge}>{item.rating}</span>
+                  <span 
+                    className={styles.ratingBadge}
+                    style={getRatingColor(item.rating)}
+                  >{item.rating}</span>
                   {item.featured && <span className={styles.featBadge}>✦ Destaque</span>}
                 </div>
                 <h1 className={styles.title}>{item.title}</h1>
@@ -321,7 +358,10 @@ export default function WatchPage() {
               <div className={styles.mainInfo}>
                 <div className={styles.badges}>
                   <span className={styles.typeBadge}>Filme</span>
-                  <span className={styles.ratingBadge}>{item.rating}</span>
+                  <span 
+                    className={styles.ratingBadge}
+                    style={getRatingColor(item.rating)}
+                  >{item.rating}</span>
                   {item.featured && <span className={styles.featBadge}>✦ Destaque</span>}
                 </div>
                 <h1 className={styles.title}>{item.title}</h1>

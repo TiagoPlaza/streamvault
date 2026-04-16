@@ -15,9 +15,6 @@ export async function GET(req: NextRequest) {
   try {
     const userId = req.nextUrl.searchParams.get('userId') ?? undefined;
     const rows   = listHomeRows(true);
-    
-
-    console.log('Rows: ', rows)
     const { items: allContent } = listContent({ status: 'published', limit: 500 });
 
     const history = userId ? getUserHistory(userId) : [];
@@ -28,6 +25,7 @@ export async function GET(req: NextRequest) {
       rowType:  row.rowType,
       position: row.position,
       items:    resolveRowContent(row, allContent, userId, history),
+      metadata: row.metadata,
     })).filter(r => r.items.length > 0);
 
     return ok(resolved);

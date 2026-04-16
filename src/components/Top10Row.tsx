@@ -77,9 +77,11 @@ export default function Top10Row({ title = 'Top 10 Hoje', items }: { title?: str
       <div className={styles.wrapper}>
         <button className={`${styles.arrow} ${styles.arrowLeft}`} onClick={() => scroll('left')}>‹</button>
         <div ref={rowRef} className={styles.row}>
-          {items.map((item, i) => (
+          {items.map((item, i) => {
+            if(i > 9) return null; // garante que só os top 10 sejam mostrados
+            return (
             <Top10Card key={item.id} item={item} rank={i + 1} />
-          ))}
+          )})}
         </div>
         <button className={`${styles.arrow} ${styles.arrowRight}`} onClick={() => scroll('right')}>›</button>
       </div>

@@ -13,13 +13,30 @@ interface Props { initial?: ContentItem; mode: 'create' | 'edit'; }
 interface GenreOption { id: number; name: string; }
 
 const defaultForm = {
-  type: 'movie' as ContentType, title: '', originalTitle: '', description: '',
-  longDescription: '', year: new Date().getFullYear(), duration: 90 as number | undefined,
-  seasons: undefined as number | undefined, totalEpisodes: undefined as number | undefined,
-  genres: [] as string[], rating: '14' as ContentRating, score: 7.0,
-  popularity: 0, status: 'draft' as ContentStatus, featured: false,
-  thumbnail: '', backdrop: '', videoUrl: '',
-  cast: '', director: '', country: 'Internacional', language: 'Português',
+  type: 'movie' as ContentType, 
+  title: '', originalTitle: '', 
+  description: '',
+  longDescription: '', 
+  year: new Date().getFullYear(), 
+  duration: 90 as number | undefined,
+  seasons: undefined as number | undefined, 
+  totalEpisodes: undefined as number | undefined,
+  genres: [] as string[], 
+  rating: '14' as ContentRating, 
+  score: 7.0,
+  popularity: 0, 
+  status: 'draft' as ContentStatus, 
+  featured: false,
+  thumbnail: '', 
+  backdrop: '', 
+  videoUrl: '',
+  previewUrl: '',
+  openingStart: '',
+  openingEnd: '',
+  cast: '', 
+  director: '', 
+  country: 'Internacional', 
+  language: 'Português',
   tags: '',
 };
 
@@ -38,18 +55,33 @@ export default function ContentForm({ initial, mode }: Props) {
   const { addItem, updateItem } = useContent();
 
   const [form, setForm] = useState(() => initial ? {
-    type: initial.type, title: initial.title, originalTitle: initial.originalTitle ?? '',
-    description: initial.description, longDescription: initial.longDescription ?? '',
-    year: initial.year, duration: initial.duration, seasons: initial.seasons,
-    totalEpisodes: initial.totalEpisodes, genres: [...initial.genres],
-    rating: initial.rating, score: initial.score, popularity: initial.popularity,
-    status: initial.status, featured: initial.featured,
-    thumbnail: initial.thumbnail, backdrop: initial.backdrop,
+    type: initial.type, 
+    title: initial.title, 
+    originalTitle: initial.originalTitle ?? '',
+    description: initial.description, 
+    longDescription: initial.longDescription ?? '',
+    year: initial.year, 
+    duration: initial.duration, 
+    seasons: initial.seasons,
+    totalEpisodes: initial.totalEpisodes, 
+    genres: [...initial.genres],
+    rating: initial.rating, 
+    score: initial.score, 
+    popularity: initial.popularity,
+    status: initial.status, 
+    featured: initial.featured,
+    thumbnail: initial.thumbnail, 
+    backdrop: initial.backdrop,
     videoUrl: initial.videoSource
       ? `https://${initial.videoSource.provider === 'youtube' ? 'youtube.com/watch?v=' : 'vimeo.com/'}${initial.videoSource.videoId}`
       : '',
-    cast: initial.cast.join(', '), director: initial.director ?? '',
-    country: initial.country, language: initial.language,
+    previewUrl: initial.previewSource
+      ? `https://${initial.previewSource.previewProvider === 'youtube' ? 'youtube.com/watch?v=' : 'vimeo.com/'}${initial.previewSource.previewId}`
+      : '',
+    cast: initial.cast.join(', '), 
+    director: initial.director ?? '',
+    country: initial.country, 
+    language: initial.language,
     tags: initial.tags.join(', '),
   } : defaultForm);
 
@@ -70,9 +102,13 @@ export default function ContentForm({ initial, mode }: Props) {
         .then(json => {
           if (json.ok) {
             setEpisodes(json.data.map((ep: {
-              id: string; season: number; episode: number; title: string;
-              description: string; duration: number;
-              thumbnail: string; videoSource?: { provider: string; videoId: string };
+              id: string; season: number; 
+              episode: number; 
+              title: string;
+              description: string; 
+              duration: number;
+              thumbnail: string; 
+              videoSource?: { provider: string; videoId: string };
               releaseDate: string;
             }) => ({
               _key: ep.id,
@@ -86,6 +122,8 @@ export default function ContentForm({ initial, mode }: Props) {
                 ? `https://${ep.videoSource.provider === 'youtube' ? 'youtube.com/watch?v=' : 'vimeo.com/'}${ep.videoSource.videoId}`
                 : '',
               releaseDate: ep.releaseDate ?? '',
+              openingStart: ep.openingStart ?? '',
+              openingEnd: ep.openingEnd ?? '',
             })));
           }
         })
@@ -109,6 +147,7 @@ export default function ContentForm({ initial, mode }: Props) {
     if (!form.thumbnail.trim()) e.thumbnail = 'Thumbnail é obrigatória';
     if (form.genres.length === 0) e.genres = 'Selecione ao menos 1 gênero';
     if (form.videoUrl && !parseVideoUrl(form.videoUrl)) e.videoUrl = 'URL inválida (YouTube ou Vimeo)';
+    if (form.previewUrl && !parseVideoUrl(form.previewUrl)) e.previewUrl = 'URL inválida (YouTube ou Vimeo)';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -119,17 +158,31 @@ export default function ContentForm({ initial, mode }: Props) {
     await new Promise(r => setTimeout(r, 600)); // simulate async
 
     const videoSource = form.videoUrl ? parseVideoUrl(form.videoUrl) ?? undefined : undefined;
+    const previewSource = form.previewUrl ? parseVideoUrl(form.previewUrl) ?? undefined : undefined;
     const data = {
-      type: form.type, title: form.title.trim(), originalTitle: form.originalTitle || undefined,
-      description: form.description.trim(), longDescription: form.longDescription || undefined,
-      year: form.year, duration: form.type === 'movie' ? form.duration : undefined,
+      type: form.type, 
+      title: form.title.trim(), 
+      originalTitle: form.originalTitle || undefined,
+      description: form.description.trim(), 
+      longDescription: form.longDescription || undefined,
+      year: form.year, 
+      duration: form.type === 'movie' ? form.duration : undefined,
       seasons: form.type === 'series' ? form.seasons : undefined,
       totalEpisodes: form.type === 'series' ? form.totalEpisodes : undefined,
-      genres: form.genres, rating: form.rating, score: form.score,
-      popularity: form.popularity, status: form.status, featured: form.featured,
-      thumbnail: form.thumbnail.trim(), backdrop: form.backdrop.trim() || form.thumbnail.trim(),
-      videoSource, cast: form.cast.split(',').map(s => s.trim()).filter(Boolean),
-      director: form.director || undefined, country: form.country, language: form.language,
+      genres: form.genres, 
+      rating: form.rating, 
+      score: form.score,
+      popularity: form.popularity, 
+      status: form.status, 
+      featured: form.featured,
+      thumbnail: form.thumbnail.trim(), 
+      backdrop: form.backdrop.trim() || form.thumbnail.trim(),
+      videoSource,
+      previewSource, 
+      cast: form.cast.split(',').map(s => s.trim()).filter(Boolean),
+      director: form.director || undefined, 
+      country: form.country, 
+      language: form.language,
       tags: form.tags.split(',').map(s => s.trim()).filter(Boolean),
     };
 
@@ -153,6 +206,8 @@ export default function ContentForm({ initial, mode }: Props) {
         thumbnail:   ep.thumbnail,
         videoSource: ep.videoUrl ? parseVideoUrl(ep.videoUrl) ?? undefined : undefined,
         releaseDate: ep.releaseDate,
+        openingStart: ep.openingStart,
+        openingEnd: ep.openingEnd,
       }));
       await fetch(`/api/content/${savedId}/episodes`, {
         method: 'PUT',
@@ -270,12 +325,19 @@ export default function ContentForm({ initial, mode }: Props) {
           <span className={styles.thumbLabel}>Preview</span>
         </div>
       )}
+      <div className={styles.grid2}>
+        <F label="URL do vídeo (YouTube ou Vimeo)" error={errors.videoUrl}>
+          <input className={`${styles.input} ${errors.videoUrl ? styles.inputError : ''}`}
+            value={form.videoUrl} onChange={e => set('videoUrl', e.target.value)}
+            placeholder="https://youtube.com/watch?v=... ou https://vimeo.com/..." />
+        </F>
 
-      <F label="URL do vídeo (YouTube ou Vimeo)" error={errors.videoUrl}>
-        <input className={`${styles.input} ${errors.videoUrl ? styles.inputError : ''}`}
-          value={form.videoUrl} onChange={e => set('videoUrl', e.target.value)}
-          placeholder="https://youtube.com/watch?v=... ou https://vimeo.com/..." />
-      </F>
+        <F label="URL do preview (YouTube ou Vimeo)" error={errors.previewUrl}>
+          <input className={`${styles.input} ${errors.previewUrl ? styles.inputError : ''}`}
+            value={form.previewUrl} onChange={e => set('previewUrl', e.target.value)}
+            placeholder="https://youtube.com/watch?v=... ou https://vimeo.com/..." />
+        </F>
+      </div>
 
       <div className={styles.grid2}>
         <F label="Elenco (separado por vírgula)">

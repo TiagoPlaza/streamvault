@@ -13,6 +13,7 @@ export interface HomeRow {
   metadata?:  {
     period?: 'day' | 'week' | 'month' | 'all_time';
     genreId?: string;
+    type?: 'movie' | 'series' | 'both';
   };
   createdAt: string;
 }
@@ -30,6 +31,7 @@ interface DbRow {
   metadata?:  {
     period?: 'day' | 'week' | 'month' | 'all_time';
     genreId?: string;
+    type?: 'movie' | 'series' | 'both';
   };
   created_at: string;
 }
@@ -93,6 +95,7 @@ export interface HomeRowInput {
   metadata?:  {
     period?: 'day' | 'week' | 'month' | 'all_time';
     genreId?: string;
+    type?: 'movie' | 'series' | 'both';
   };
 }
 

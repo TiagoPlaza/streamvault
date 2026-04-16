@@ -7,6 +7,10 @@ export interface VideoSource {
   provider: VideoProvider;
   videoId: string;
 }
+export interface PreviewSource {
+  previewProvider: VideoProvider;
+  previewId: string;
+}
 
 export interface ContentItem {
   id: string;
@@ -27,6 +31,7 @@ export interface ContentItem {
   featured: boolean;
   thumbnail: string;
   backdrop: string;
+  previewSource?: PreviewSource;
   videoSource?: VideoSource;
   cast: string[];
   director?: string;
@@ -48,4 +53,6 @@ export interface Episode {
   thumbnail?: string;
   videoSource?: VideoSource;
   releaseDate?: string;
+  openingStart?: string;
+  openingEnd?: string;
 }
