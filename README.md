@@ -1,127 +1,143 @@
-# 🎬 StreamVault
+﻿# 🎬 StreamVault
 
-**StreamVault** é uma plataforma de streaming de vídeo *on-demand* (VOD) moderna e performática, desenvolvida com **Next.js 14+ (App Router)**. O projeto oferece suporte completo para filmes e séries, autenticação segura com controle de acesso (RBAC), e um painel administrativo robusto.
+**StreamVault** é uma plataforma VOD moderna construída com **Next.js 14+ (App Router)** e **TypeScript**. O projeto combina um catálogo de filmes e séries com uma home personalizada, controle administrativo, autenticação JWT e persistência SQLite.
 
 ## 🚀 Tecnologias
 
-- **Frontend:** React, Next.js (App Router), TypeScript, CSS Modules.
-- **Backend:** Next.js API Routes (Serverless functions).
-- **Banco de Dados:** SQLite (via `better-sqlite3`).
-- **Autenticação:** JWT (JSON Web Tokens) com `jose` (Edge Compatible) e `bcryptjs`.
-- **Player:** Integração customizada com YouTube IFrame API e Vimeo Player SDK.
+- **Frontend:** React, Next.js App Router, TypeScript, CSS Modules.
+- **Backend:** Next.js API Routes + rota de middleware para proteção de `/admin`.
+- **Banco de Dados:** SQLite usando `better-sqlite3`.
+- **Autenticação:** JWT com `jose`, cookies HTTP-only e controle RBAC para admins.
+- **Player:** suporte a YouTube e Vimeo via componentes personalizados.
 
 ## 📦 Instalação e Execução
 
-1.  **Instale as dependências:**
+1. Instale as dependências:
     ```bash
     npm install
     ```
 
-2.  **Configuração de Ambiente:**
-    Crie um arquivo `.env.local` na raiz do projeto (opcional para desenvolvimento, o sistema possui fallback):
+2. Crie `.env.local` (opcional):
     ```env
     JWT_SECRET=sua_chave_secreta_super_segura
     ```
 
-3.  **Inicialize o Banco de Dados:**
+3. Popule o banco de dados:
     ```bash
-    npm run db:seed     # Popula o banco com dados iniciais
+    npm run db:seed
     ```
 
-4.  **Execute o servidor de desenvolvimento:**
+4. Execute em modo desenvolvimento:
     ```bash
     npm run dev
     ```
-    Acesse http://localhost:3000.
 
-## 🏗️ Arquitetura do Projeto
+5. Acesse a aplicação:
+    ```text
+    http://localhost:3000
+    ```
 
-### Estrutura de Pastas
+## 🧩 Visão geral do projeto
 
-A estrutura segue o padrão do Next.js App Router, organizada por domínios de funcionalidade:
+### Principais áreas
+
+- `/` — Home personalizada com linhas de conteúdo e blocos `Top 10`.
+- `/browse` — Catálogo de conteúdo com filtros por tipo, gênero, busca e ordenação.
+- `/watch/[id]` — Player de filme/série com informações do título.
+- `/admin` — Painel administrativo protegido por middleware.
+- `/login` — Autenticação e registro para acesso ao admin.
+
+### Fluxo de dados
+
+- `ContentContext` busca conteúdos via `/api/content` e fornece gerenciamento global de estado.
+- Home page consome `/api/home?userId=...` e resolve as linhas de conteúdo já combinadas com `Top10`.
+- Browse page carrega gêneros de `/api/genres` para montar filtros dinâmicos.
+
+## 🗂️ Estrutura principal
 
 ```text
 src/
-├── app/                    # Rotas e páginas da aplicação
-│   ├── admin/              # Área administrativa (protegida por middleware)
-│   ├── api/                # API Routes (Backend-for-Frontend)
-│   ├── login/              # Página de Login/Registro
-│   ├── watch/[id]/         # Player principal (Lógica de Filmes e Séries)
-│   └── page.tsx            # Home page
-├── components/             # Componentes React reutilizáveis
-│   ├── admin/              # Componentes específicos do Admin (Layout, etc)
-│   └── VideoPlayer.tsx     # Componente de player universal (YouTube/Vimeo)
-├── hooks/                  # Custom Hooks (Lógica de estado e efeitos)
-├── lib/                    # Bibliotecas auxiliares e configurações
-│   ├── auth.ts             # Gestão de Sessão/JWT (Edge Runtime Compatible)
-│   ├── db.ts               # Conexão Singleton com SQLite
-│   └── user-repository.ts  # Data Access Layer de Usuários (Node Runtime)
-├── services/               # Fetch wrappers para comunicação com a API
-├── types/                  # Definições de tipos TypeScript globais
-└── middleware.ts           # Proteção de rotas (Edge Middleware)
+├── app/
+│   ├── admin/           # Painel administrativo
+│   ├── api/             # Endpoints do backend
+│   ├── browse/          # Página de exploração de catálogo
+│   ├── login/           # Login / registro
+│   ├── watch/[id]/      # Player e detalhes do conteúdo
+│   ├── page.tsx         # Home pública
+│   └── bk-page.tsx      # Página de teste/biblioteca adicional
+├── components/          # Componentes React reutilizáveis
+├── context/             # Conteúdo global e cache local
+├── hooks/               # Hooks customizados
+├── lib/                 # Repositórios, DB, auth e personalização
+├── services/            # Serviços de dados (gêneros, etc.)
+├── types/               # Tipos TypeScript
+└── middleware.ts        # Proteção de rotas administrativas
 ```
 
-Ou via browser: `http://localhost:3000/api/seed`
+## 🗃️ Banco de dados
 
-## Arquitetura do banco
+- `src/lib/db.ts` — conexão singleton SQLite.
+- `src/lib/db-init.ts` — migrações e esquema inicial.
+- `scripts/seed.ts` — popula conteúdo, gêneros, usuários e home rows.
+- `src/lib/content-repository.ts` — CRUD e listagem de conteúdo.
 
-```
-src/lib/
-├── db.ts                    # Singleton da conexão (WAL mode)
-├── db-init.ts               # Schema + migrações versionadas
-└── content-repository.ts    # Repository Pattern (CRUD + stats)
-scripts/
-└── seed.ts                  # Seed CLI
-```
+## 🔌 API Routes
 
-## API Routes
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/content` | Lista conteúdos com filtros (`status`, `type`, `genre`, `search`, `orderBy`, `order`, `limit`, `offset`) |
+| POST | `/api/content` | Cria novo conteúdo |
+| GET | `/api/content/:id` | Busca conteúdo por ID |
+| PUT | `/api/content/:id` | Atualiza conteúdo |
+| DELETE | `/api/content/:id` | Remove conteúdo |
+| PATCH | `/api/content/:id/featured` | Alterna destaque |
+| PATCH | `/api/content/:id/status` | Alterna status entre `published`/`draft` |
+| GET | `/api/home` | Resolve home personalizada com linhas e Top 10 |
+| GET | `/api/genres` | Lista gêneros ativos |
+| POST | `/api/genres` | Cria novo gênero |
+| GET | `/api/home-rows` | Lista home rows para admin |
+| POST | `/api/home-rows` | Cria nova home row |
+| GET | `/api/users` | Lista usuários (admin) |
+| GET | `/api/auth/me` | Retorna usuário logado |
+| POST | `/api/auth/login` | Login admin/user |
+| POST | `/api/auth/register` | Registro de usuário |
+| POST | `/api/auth/logout` | Logout e exclusão do cookie |
+| GET | `/api/stats` | Métricas do dashboard admin |
+| GET | `/api/seed` | Popula dados de seed via HTTP (dev) |
 
-| Método | Rota | Ação |
-|--------|------|------|
-| GET | /api/content | Lista com filtros |
-| POST | /api/content | Cria |
-| GET | /api/content/:id | Busca por ID |
-| PUT | /api/content/:id | Atualiza |
-| DELETE | /api/content/:id | Remove |
-| PATCH | /api/content/:id/featured | Toggle destaque |
-| PATCH | /api/content/:id/status | Toggle status |
-| GET | /api/stats | Métricas do dashboard |
-| GET | /api/seed | Seed via HTTP (dev) |
+> A aplicação também possui rotas REST adicionais para gestão de episódios, usuários, `home-rows/[id]`, `genres/[id]` e mais.
 
-## Scripts
+## 🛡️ Segurança e admin
+
+- O middleware protege todas as rotas que começam com `/admin`.
+- O primeiro usuário criado no banco recebe role `admin`.
+- Sessão é gerada com JWT e salva em cookie HTTP-only.
+- O admin pode gerenciar:
+  - Conteúdo
+  - Gêneros
+  - Home rows (incluindo `top10` com metadata de período e tipo)
+  - Usuários
+
+## 📌 Destaques do projeto
+
+- Home personalizada com `Top10` calculado por visualizações e filtros.
+- Busca e navegação avançada em `/browse` com filtros dinâmicos de gênero.
+- Painel admin completo com edição de conteúdo, status e destaque.
+- Autenticação JWT compatível com runtime Edge.
+
+## 📜 Scripts úteis
 
 ```bash
-npm run db:seed         # Popula (pula se já tem dados)
-npm run db:seed:force   # Recria todos os dados
-npm run db:reset        # Remove banco e recria
+npm run dev
+npm run build
+npm run start
+npm run db:seed
+npm run db:seed:force
+npm run db:reset
 ```
 
-## Por que better-sqlite3?
+## 💡 Observações
 
-- Síncrono — funciona perfeitamente com Next.js Node.js runtime
-- Performance superior para operações simples
-- Zero infraestrutura adicional
-
-## Migrações
-
-Em `db-init.ts`, array `MIGRATIONS`:
-
-```typescript
-{
-  version: 3,
-  name: 'add_views_table',
-  up: (db) => { db.exec('CREATE TABLE views (...)') }
-}
-```
-
-Cada migração roda uma única vez. Versões aplicadas ficam na tabela `migrations`.
-
-## Produção / Serverless
-
-Para Vercel (filesystem read-only), use **Turso** (SQLite na nuvem):
-
-```bash
-npm install @libsql/client
-```
-
-Troque `better-sqlite3` por `@libsql/client` em `db.ts`. O repositório não muda.
+- Use `JWT_SECRET` no `.env.local` para garantir tokens seguros.
+- O seed inicial cria dados de exemplo para conteúdo, gêneros e usuários.
+- Se quiser adaptar para produção, substitua o driver SQLite por uma solução compatível com Vercel/Turso.
